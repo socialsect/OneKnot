@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { motion } from 'framer-motion'
@@ -9,8 +9,15 @@ export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { signInWithGoogle, login, signUp } = useAuth()
+  const { signInWithGoogle, login, signUp, currentUser } = useAuth()
   const navigate = useNavigate()
+
+  // Redirect to /create if user is already logged in (e.g., after Google redirect)
+  useEffect(() => {
+    if (currentUser) {
+      navigate('/create', { replace: true })
+    }
+  }, [currentUser, navigate])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -35,13 +42,14 @@ export default function Login() {
     setError('')
     setLoading(true)
     try {
+      // signInWithRedirect will redirect the page, so we don't navigate here
       await signInWithGoogle()
-      navigate('/create')
+      // The redirect will happen, and getRedirectResult will handle it in AuthContext
     } catch (err) {
       setError(err.message || 'Failed to sign in with Google')
-    } finally {
       setLoading(false)
     }
+    // Don't set loading to false here - the redirect will happen
   }
 
   return (

@@ -78,6 +78,7 @@ export function AuthProvider({ children }) {
       })
       .catch((error) => {
         console.error('Redirect result error:', error)
+        // Don't set loading to false on error - let onAuthStateChanged handle it
       })
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
