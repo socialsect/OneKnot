@@ -15,6 +15,7 @@ import Gallery from './pages/Gallery'
 import FindMyPhotos from './pages/FindMyPhotos'
 import WeddingSettings from './pages/WeddingSettings'
 import UpdatesManagement from './pages/UpdatesManagement'
+import NotFound from './pages/NotFound'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
             <Route path="/event/:eventId" element={<EventDetails />} />
             <Route path="/gallery/:weddingId" element={<Gallery />} />
             <Route path="/find-my-photos/:weddingId" element={<FindMyPhotos />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
       </WeddingProvider>

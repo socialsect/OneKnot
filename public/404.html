@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 - Page Not Found | OneKnot</title>
+  <meta name="description" content="The page you're looking for doesn't exist.">
+  <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #fdf2f8 0%, #f3e8ff 50%, #dbeafe 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: #1f2937;
+    }
+    .container {
+      text-align: center;
+      max-width: 600px;
+    }
+    .error-code {
+      font-size: 120px;
+      font-weight: bold;
+      color: #ec4899;
+      opacity: 0.2;
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: 36px;
+      font-weight: bold;
+      color: #1f2937;
+      margin-bottom: 16px;
+    }
+    p {
+      font-size: 18px;
+      color: #4b5563;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+    .buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      border-radius: 50px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      font-size: 16px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
+    }
+    .btn-primary:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 16px rgba(236, 72, 153, 0.5);
+    }
+    .btn-secondary {
+      background: white;
+      color: #ec4899;
+      border: 2px solid #ec4899;
+    }
+    .btn-secondary:hover {
+      background: #fdf2f8;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #ec4899;
+      margin-bottom: 40px;
+    }
+    @media (max-width: 640px) {
+      .error-code {
+        font-size: 80px;
+      }
+      h1 {
+        font-size: 28px;
+      }
+      p {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">OneKnot</div>
+    <div class="error-code">404</div>
+    <h1>Page Not Found</h1>
+    <p>
+      Oops! The page you're looking for doesn't exist. It might have been moved, deleted, or you entered the wrong URL.
+    </p>
+    <div class="buttons">
+      <a href="/" class="btn btn-primary">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+        Go Home
+      </a>
+      <a href="javascript:history.back()" class="btn btn-secondary">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"></path>
+        </svg>
+        Go Back
+      </a>
+    </div>
+  </div>
+  <script>
+    // Redirect to React app if JavaScript is enabled (better UX)
+    // This ensures React Router handles the 404 for better navigation
+    if (window.location.pathname !== '/404.html') {
+      window.location.href = '/';
+    }
+  </script>
+</body>
+</html>
