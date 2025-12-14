@@ -30,7 +30,9 @@ export function AuthProvider({ children }) {
     const provider = new GoogleAuthProvider()
     try {
       // Use redirect instead of popup to avoid COOP issues
+      // This will redirect the entire page to Google, then back to the app
       await signInWithRedirect(auth, provider)
+      // The redirect will happen immediately, so this code won't execute
     } catch (error) {
       console.error('Google sign in error:', error)
       throw error
@@ -68,25 +70,33 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
+    let isMounted = true
+
     // Check for redirect result on mount
     getRedirectResult(auth)
       .then((result) => {
-        if (result) {
+        if (result && isMounted) {
           // User signed in via redirect
           setCurrentUser(result.user)
+          setLoading(false)
         }
       })
       .catch((error) => {
         console.error('Redirect result error:', error)
-        // Don't set loading to false on error - let onAuthStateChanged handle it
+        // Continue to onAuthStateChanged even if there's an error
       })
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user)
-      setLoading(false)
+      if (isMounted) {
+        setCurrentUser(user)
+        setLoading(false)
+      }
     })
 
-    return unsubscribe
+    return () => {
+      isMounted = false
+      unsubscribe()
+    }
   }, [])
 
   const value = {

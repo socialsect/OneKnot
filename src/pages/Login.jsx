@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { motion } from 'framer-motion'
@@ -11,13 +11,36 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const { signInWithGoogle, login, signUp, currentUser } = useAuth()
   const navigate = useNavigate()
+  const hasRedirected = useRef(false)
 
   // Redirect to /create if user is already logged in (e.g., after Google redirect)
   useEffect(() => {
-    if (currentUser) {
-      navigate('/create', { replace: true })
+    if (currentUser && !hasRedirected.current) {
+      hasRedirected.current = true
+      // Clear the redirect flag
+      sessionStorage.removeItem('googleSignInRedirect')
+      // Small delay to ensure auth state is fully set
+      const timer = setTimeout(() => {
+        navigate('/create', { replace: true })
+      }, 100)
+      return () => clearTimeout(timer)
     }
   }, [currentUser, navigate])
+
+  // Check if we just came back from a Google redirect
+  useEffect(() => {
+    const wasRedirect = sessionStorage.getItem('googleSignInRedirect')
+    if (wasRedirect && !currentUser) {
+      // We're processing a redirect, wait a bit for auth state to update
+      const timer = setTimeout(() => {
+        if (!currentUser) {
+          // If still no user after waiting, clear the flag
+          sessionStorage.removeItem('googleSignInRedirect')
+        }
+      }, 2000)
+      return () => clearTimeout(timer)
+    }
+  }, [currentUser])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -42,12 +65,15 @@ export default function Login() {
     setError('')
     setLoading(true)
     try {
+      // Store that we're initiating a redirect to prevent loops
+      sessionStorage.setItem('googleSignInRedirect', 'true')
       // signInWithRedirect will redirect the page, so we don't navigate here
       await signInWithGoogle()
       // The redirect will happen, and getRedirectResult will handle it in AuthContext
     } catch (err) {
       setError(err.message || 'Failed to sign in with Google')
       setLoading(false)
+      sessionStorage.removeItem('googleSignInRedirect')
     }
     // Don't set loading to false here - the redirect will happen
   }
