@@ -10,7 +10,7 @@ export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { signInWithGoogle, login, signUp, currentUser } = useAuth()
+  const { signInWithGoogle, login, signUp, currentUser, loading: authLoading } = useAuth()
   const { getUserWeddings, weddings } = useWedding()
   const navigate = useNavigate()
   const hasRedirected = useRef(false)
@@ -18,50 +18,49 @@ export default function Login() {
   // Redirect after login - check if user has weddings
   useEffect(() => {
     const redirectAfterLogin = async () => {
-      if (currentUser && !hasRedirected.current) {
+      // Wait for auth to finish loading and user to be set
+      if (!authLoading && currentUser && !hasRedirected.current) {
         hasRedirected.current = true
         // Clear the redirect flag
         sessionStorage.removeItem('googleSignInRedirect')
         
-        // Wait a bit for auth state to be fully set, then check for weddings
-        const timer = setTimeout(async () => {
-          try {
-            // Get user's weddings
-            const userWeddings = await getUserWeddings()
-            
-            if (userWeddings && userWeddings.length > 0) {
-              // User has weddings - redirect to dashboard
-              navigate(`/dashboard/${userWeddings[0].id}`, { replace: true })
-            } else {
-              // No weddings - redirect to create page
-              navigate('/create', { replace: true })
-            }
-          } catch (err) {
-            console.error('Error checking weddings:', err)
-            // On error, default to create page
+        try {
+          // Wait a moment for contexts to be ready
+          await new Promise(resolve => setTimeout(resolve, 300))
+          
+          // Get user's weddings - wait for it to complete
+          const userWeddings = await getUserWeddings()
+          
+          // Additional small delay to ensure everything is ready
+          await new Promise(resolve => setTimeout(resolve, 200))
+          
+          if (userWeddings && userWeddings.length > 0) {
+            // User has weddings - redirect to dashboard
+            console.log('Redirecting to dashboard:', userWeddings[0].id)
+            navigate(`/dashboard/${userWeddings[0].id}`, { replace: true })
+          } else {
+            // No weddings - redirect to create page
+            console.log('No weddings found, redirecting to create')
             navigate('/create', { replace: true })
           }
-        }, 200)
-        
-        return () => clearTimeout(timer)
+        } catch (err) {
+          console.error('Error checking weddings:', err)
+          // On error, default to create page
+          navigate('/create', { replace: true })
+        }
       }
     }
     
     redirectAfterLogin()
-  }, [currentUser, navigate, getUserWeddings])
+  }, [currentUser, authLoading, navigate, getUserWeddings])
 
-  // Check if we just came back from a Google redirect
+  // Reset redirect flag if component unmounts or user changes
   useEffect(() => {
-    const wasRedirect = sessionStorage.getItem('googleSignInRedirect')
-    if (wasRedirect && !currentUser) {
-      // We're processing a redirect, wait a bit for auth state to update
-      const timer = setTimeout(() => {
-        if (!currentUser) {
-          // If still no user after waiting, clear the flag
-          sessionStorage.removeItem('googleSignInRedirect')
-        }
-      }, 2000)
-      return () => clearTimeout(timer)
+    return () => {
+      // Reset on unmount to allow redirect on next mount
+      if (!currentUser) {
+        hasRedirected.current = false
+      }
     }
   }, [currentUser])
 
@@ -105,6 +104,18 @@ export default function Login() {
       sessionStorage.removeItem('googleSignInRedirect')
     }
     // Don't set loading to false here - the redirect will happen
+  }
+
+  // Don't show login form if user is authenticated (redirect is in progress)
+  if (!authLoading && currentUser && hasRedirected.current) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Redirecting...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
