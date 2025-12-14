@@ -11,7 +11,14 @@ export default function Home() {
       {/* Navigation */}
       <nav className="container mx-auto px-4 py-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-pink-600">OneKnot</h1>
+          <Link to="/" className="flex items-center gap-3">
+            <img 
+              src="/logo.png" 
+              alt="OneKnot Logo" 
+              className="h-8 w-8 md:h-10 md:w-10 object-contain"
+            />
+            <h1 className="text-2xl font-bold text-pink-600">OneKnot</h1>
+          </Link>
           <div className="flex gap-4">
             {currentUser ? (
               <Link to="/dashboard" className="btn-primary">
@@ -467,7 +474,14 @@ export default function Home() {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             {/* Brand */}
             <div>
-              <h3 className="text-2xl font-bold text-white mb-4">OneKnot</h3>
+              <div className="flex items-center gap-3 mb-4">
+                <img 
+                  src="/logo.png" 
+                  alt="OneKnot Logo" 
+                  className="h-8 w-8 object-contain"
+                />
+                <h3 className="text-2xl font-bold text-white">OneKnot</h3>
+              </div>
               <p className="text-gray-400 leading-relaxed">
                 Your wedding command center. One link for everything.
               </p>

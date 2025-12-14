@@ -81,10 +81,21 @@
       background: #fdf2f8;
     }
     .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+    .logo img {
+      height: 40px;
+      width: 40px;
+      object-fit: contain;
+    }
+    .logo-text {
       font-size: 24px;
       font-weight: bold;
       color: #ec4899;
-      margin-bottom: 40px;
     }
     @media (max-width: 640px) {
       .error-code {
@@ -101,7 +112,10 @@
 </head>
 <body>
   <div class="container">
-    <div class="logo">OneKnot</div>
+    <div class="logo">
+      <img src="/logo.png" alt="OneKnot Logo" />
+      <span class="logo-text">OneKnot</span>
+    </div>
     <div class="error-code">404</div>
     <h1>Page Not Found</h1>
     <p>

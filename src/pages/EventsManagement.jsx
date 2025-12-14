@@ -189,7 +189,14 @@ export default function EventsManagement() {
       <nav className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <Link to="/" className="text-2xl font-bold text-pink-600">OneKnot</Link>
+            <Link to="/" className="flex items-center gap-3">
+              <img 
+                src="/logo.png" 
+                alt="OneKnot Logo" 
+                className="h-8 w-8 object-contain"
+              />
+              <span className="text-2xl font-bold text-pink-600">OneKnot</span>
+            </Link>
             <div className="flex items-center gap-4">
               <Link
                 to={`/dashboard/${weddingId}`}
