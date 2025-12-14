@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wedding Invitation</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
+  <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+    <!-- Header with gradient -->
+    <div style="background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); padding: 40px 20px; text-align: center;">
+      <div style="color: #ffffff; font-size: 48px; margin-bottom: 20px;">💍</div>
+      <h1 style="color: #ffffff; font-size: 32px; font-weight: 700; margin: 0; text-transform: none;">
+        You're Invited!
+      </h1>
+    </div>
+
+    <!-- Main Content -->
+    <div style="padding: 40px 30px;">
+      <p style="font-size: 18px; line-height: 1.6; color: #333333; margin: 0 0 20px 0;">
+        Dear {{to_name}},
+      </p>
+      
+      <p style="font-size: 16px; line-height: 1.6; color: #555555; margin: 0 0 20px 0;">
+        We are thrilled to invite you to celebrate our special day!
+      </p>
+
+      <!-- Couple Names -->
+      <div style="text-align: center; margin: 30px 0; padding: 30px 0; border-top: 2px solid #f0f0f0; border-bottom: 2px solid #f0f0f0;">
+        <h2 style="font-size: 28px; font-weight: 700; color: #ec4899; margin: 0 0 10px 0;">
+          {{couple_names}}
+        </h2>
+        <p style="font-size: 18px; color: #666666; margin: 5px 0;">
+          {{wedding_date}}
+        </p>
+        <p style="font-size: 16px; color: #888888; margin: 5px 0;">
+          {{wedding_city}}
+        </p>
+      </div>
+
+      <p style="font-size: 16px; line-height: 1.6; color: #555555; margin: 0 0 30px 0;">
+        We would be honored to have you join us as we exchange vows and begin our journey together. Your presence would make our celebration complete!
+      </p>
+
+      <!-- CTA Buttons -->
+      <div style="text-align: center; margin: 30px 0;">
+        <a
+          href="{{rsvp_url}}"
+          style="
+            display: inline-block;
+            text-decoration: none;
+            outline: none;
+            color: #ffffff;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            padding: 16px 36px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 700;
+            margin: 10px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+          "
+          target="_blank"
+        >
+          ✓ RSVP Now
+        </a>
+      </div>
+
+      <div style="text-align: center; margin: 20px 0;">
+        <a
+          href="{{invite_url}}"
+          style="
+            display: inline-block;
+            text-decoration: none;
+            outline: none;
+            color: #ffffff;
+            background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 10px;
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+          "
+          target="_blank"
+        >
+          View Your Invitation
+        </a>
+      </div>
+
+      <div style="text-align: center; margin: 20px 0;">
+        <a
+          href="{{website_url}}"
+          style="
+            display: inline-block;
+            text-decoration: none;
+            outline: none;
+            color: #ec4899;
+            background-color: #ffffff;
+            border: 2px solid #ec4899;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-size: 15px;
+            font-weight: 600;
+            margin: 10px;
+          "
+          target="_blank"
+        >
+          Visit Wedding Website
+        </a>
+      </div>
+
+      <p style="font-size: 14px; line-height: 1.6; color: #888888; margin: 30px 0 0 0; text-align: center;">
+        Please RSVP by clicking the green button above. We can't wait to celebrate with you!
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div style="background-color: #f9fafb; padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+      <p style="font-size: 14px; color: #6b7280; margin: 0 0 10px 0;">
+        Made with ❤️ using <strong style="color: #ec4899;">OneKnot</strong>
+      </p>
+      <p style="font-size: 12px; color: #9ca3af; margin: 0;">
+        If you have any questions, please reply to this email or contact us at
+        <a href="mailto:{{reply_to}}" style="color: #ec4899; text-decoration: none;">{{reply_to}}</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+

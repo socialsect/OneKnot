@@ -1,0 +1,137 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is owner
+    // Note: Collaborator checking is simplified - currently only checks ownership
+    // For full collaborator support, consider storing collaborator UIDs in a map or separate collection
+    function isOwnerOrCollaborator(weddingId) {
+      let wedding = get(/databases/$(database)/documents/weddings/$(weddingId));
+      return wedding.data.ownerId == request.auth.uid;
+    }
+    
+    // Weddings collection
+    match /weddings/{weddingId} {
+      // Allow public read (for wedding websites)
+      allow read: if true;
+      
+      // Allow create if authenticated and user is setting themselves as owner
+      allow create: if request.auth != null && 
+                       request.resource.data.ownerId == request.auth.uid;
+      
+      // Allow update if user is the owner
+      allow update: if request.auth != null && 
+                       resource.data.ownerId == request.auth.uid;
+      
+      // Allow delete if user is the owner
+      allow delete: if request.auth != null && 
+                       resource.data.ownerId == request.auth.uid;
+      
+      // Events subcollection
+      match /events/{eventId} {
+        // Allow public read (for wedding websites)
+        allow read: if true;
+        
+        // Allow create if user is owner or collaborator
+        allow create: if request.auth != null && 
+                         isOwnerOrCollaborator(weddingId);
+        
+        // Allow update if user is owner or collaborator
+        allow update: if request.auth != null && 
+                         isOwnerOrCollaborator(weddingId);
+        
+        // Allow delete if user is owner or collaborator
+        allow delete: if request.auth != null && 
+                         isOwnerOrCollaborator(weddingId);
+      }
+      
+      // RSVPs subcollection
+      match /rsvps/{rsvpId} {
+        // Allow public read (for dashboard - authenticated users)
+        // Allow public read for guests to check their RSVP
+        allow read: if true;
+        
+        // Allow create for anyone (guests don't need login)
+        allow create: if true;
+        
+        // Allow update for anyone (guests can update their RSVP)
+        // In production, should verify guestId matches
+        allow update: if true;
+        
+        // Allow delete if authenticated and owner/collaborator
+        allow delete: if request.auth != null && 
+                         isOwnerOrCollaborator(weddingId);
+      }
+      
+      // Gallery subcollection
+      match /gallery/{photoId} {
+        // Allow public read (for gallery)
+        allow read: if true;
+        
+        // Allow create if authenticated (guests can upload)
+        // In production, should restrict to owner/collaborator
+        allow create: if request.auth != null;
+        
+        // Allow update if authenticated (for likes)
+        allow update: if request.auth != null;
+        
+        // Allow delete if user is owner or collaborator
+        allow delete: if request.auth != null && 
+                         isOwnerOrCollaborator(weddingId);
+      }
+      
+      // Invitations subcollection
+      match /invitations/{invitationId} {
+        // Allow read if authenticated and owner/collaborator
+        allow read: if request.auth != null && 
+                       isOwnerOrCollaborator(weddingId);
+        
+        // Allow create if user is owner or collaborator
+        allow create: if request.auth != null && 
+                         isOwnerOrCollaborator(weddingId);
+        
+        // Allow update if user is owner or collaborator
+        allow update: if request.auth != null && 
+                         isOwnerOrCollaborator(weddingId);
+        
+        // Allow delete if user is owner or collaborator
+        allow delete: if request.auth != null && 
+                         isOwnerOrCollaborator(weddingId);
+      }
+      
+      // Memories subcollection (Memory Wall)
+      match /memories/{memoryId} {
+        // Allow public read (for wedding website)
+        allow read: if true;
+        
+        // Allow create for anyone (guests can post memories)
+        allow create: if true;
+        
+        // Allow update for anyone (for reactions)
+        allow update: if true;
+        
+        // Allow delete if authenticated and owner/collaborator
+        allow delete: if request.auth != null && 
+                         isOwnerOrCollaborator(weddingId);
+      }
+      
+      // Updates subcollection (Guest Alerts & Live Updates)
+      match /updates/{updateId} {
+        // Allow public read (for wedding website and event pages)
+        allow read: if true;
+        
+        // Allow create if user is owner or collaborator
+        allow create: if request.auth != null && 
+                         isOwnerOrCollaborator(weddingId);
+        
+        // Allow update if user is owner or collaborator
+        allow update: if request.auth != null && 
+                         isOwnerOrCollaborator(weddingId);
+        
+        // Allow delete if user is owner or collaborator
+        allow delete: if request.auth != null && 
+                         isOwnerOrCollaborator(weddingId);
+      }
+    }
+  }
+}

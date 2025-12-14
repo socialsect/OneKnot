@@ -1,0 +1,17 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow read for all authenticated users
+    match /weddings/{weddingId}/{allPaths=**} {
+      // Allow read for everyone (public gallery)
+      allow read: if true;
+      
+      // Allow write only if user owns the wedding
+      allow write: if request.auth != null && 
+                      firestore.exists(/databases/(default)/documents/weddings/$(weddingId)) &&
+                      firestore.get(/databases/(default)/documents/weddings/$(weddingId)).data.ownerId == request.auth.uid;
+    }
+  }
+}
+
+
