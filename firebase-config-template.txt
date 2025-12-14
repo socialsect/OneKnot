@@ -4,15 +4,18 @@
 # Instructions:
 # 1. Create a new file named ".env" in the project root
 # 2. Copy the VITE_ variables below into that file
-# 3. Save the file
+# 3. Replace the placeholder values with your actual Firebase credentials
+# 4. Save the file
+# 
+# IMPORTANT: Never commit your .env file or files with real credentials to Git!
 
-VITE_FIREBASE_API_KEY=AIzaSyA5KgRgafHAMea93q36FwepBhTGhF-M5yY
-VITE_FIREBASE_AUTH_DOMAIN=oneknot-8c49b.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=oneknot-8c49b
-VITE_FIREBASE_STORAGE_BUCKET=oneknot-8c49b.firebasestorage.app
-VITE_FIREBASE_MESSAGING_SENDER_ID=1045938150628
-VITE_FIREBASE_APP_ID=1:1045938150628:web:4368ab0ed5da250543a0f1
+VITE_FIREBASE_API_KEY=your-api-key-here
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=123456789
+VITE_FIREBASE_APP_ID=your-app-id-here
 
 # Optional: Analytics
-# VITE_FIREBASE_MEASUREMENT_ID=G-B1RXC34YN5
+# VITE_FIREBASE_MEASUREMENT_ID=G-XXXXXXXXXX
 

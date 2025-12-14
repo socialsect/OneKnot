@@ -27,3 +27,6 @@ dist-ssr
 .env
 .env.local
 .env.production
+
+# Config files with sensitive data (if any contain real credentials)
+# firebase-config-template.txt
