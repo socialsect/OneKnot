@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
+import { useWedding } from '../contexts/WeddingContext'
 import { motion } from 'framer-motion'
 
 export default function Login() {
@@ -10,22 +11,44 @@ export default function Login() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { signInWithGoogle, login, signUp, currentUser } = useAuth()
+  const { getUserWeddings, weddings } = useWedding()
   const navigate = useNavigate()
   const hasRedirected = useRef(false)
 
-  // Redirect to /create if user is already logged in (e.g., after Google redirect)
+  // Redirect after login - check if user has weddings
   useEffect(() => {
-    if (currentUser && !hasRedirected.current) {
-      hasRedirected.current = true
-      // Clear the redirect flag
-      sessionStorage.removeItem('googleSignInRedirect')
-      // Small delay to ensure auth state is fully set
-      const timer = setTimeout(() => {
-        navigate('/create', { replace: true })
-      }, 100)
-      return () => clearTimeout(timer)
+    const redirectAfterLogin = async () => {
+      if (currentUser && !hasRedirected.current) {
+        hasRedirected.current = true
+        // Clear the redirect flag
+        sessionStorage.removeItem('googleSignInRedirect')
+        
+        // Wait a bit for auth state to be fully set, then check for weddings
+        const timer = setTimeout(async () => {
+          try {
+            // Get user's weddings
+            const userWeddings = await getUserWeddings()
+            
+            if (userWeddings && userWeddings.length > 0) {
+              // User has weddings - redirect to dashboard
+              navigate(`/dashboard/${userWeddings[0].id}`, { replace: true })
+            } else {
+              // No weddings - redirect to create page
+              navigate('/create', { replace: true })
+            }
+          } catch (err) {
+            console.error('Error checking weddings:', err)
+            // On error, default to create page
+            navigate('/create', { replace: true })
+          }
+        }, 200)
+        
+        return () => clearTimeout(timer)
+      }
     }
-  }, [currentUser, navigate])
+    
+    redirectAfterLogin()
+  }, [currentUser, navigate, getUserWeddings])
 
   // Check if we just came back from a Google redirect
   useEffect(() => {
@@ -50,14 +73,20 @@ export default function Login() {
     try {
       if (isSignUp) {
         await signUp(email, password)
+        // New users go to create page - mark as redirected to prevent useEffect
+        hasRedirected.current = true
+        navigate('/create')
       } else {
         await login(email, password)
+        // For existing users, let the useEffect handle the redirect
+        // It will check for weddings and redirect appropriately
+        // Don't set hasRedirected here - let useEffect handle it
       }
-      navigate('/create')
     } catch (err) {
       setError(err.message || 'Failed to authenticate')
-    } finally {
       setLoading(false)
+      // Reset redirect flag on error
+      hasRedirected.current = false
     }
   }
 
