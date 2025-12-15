@@ -4,7 +4,7 @@ import { useWedding } from '../contexts/WeddingContext'
 import { useAuth } from '../contexts/AuthContext'
 import { collection, query, where, getDocs, orderBy, addDoc, deleteDoc, doc, updateDoc, serverTimestamp } from 'firebase/firestore'
 import { db } from '../config/firebase'
-import { Calendar, Clock, MapPin, Shirt, Heart, Camera, ArrowRight, Copy, Check, Share2, MessageSquare } from 'lucide-react'
+import { Calendar, Clock, MapPin, Shirt, Heart, Camera, ArrowRight, Copy, Check, Share2, MessageSquare, Bell } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 const themeStyles = {
