@@ -1,24 +1,65 @@
+@font-face {
+  font-family: 'Gambarino';
+  src: url('/Gambarino-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Stardom';
+  src: url('/Stardom-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  * {
+    font-family: 'Gambarino', 'Stardom', system-ui, sans-serif;
+  }
+  
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply bg-white text-[#dd212b];
+    font-family: 'Gambarino', 'Stardom', system-ui, sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Gambarino', 'Stardom', system-ui, sans-serif;
+    color: #dd212b;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-pink-600 hover:bg-pink-700 text-white font-semibold py-2 px-6 rounded-full transition-colors duration-200;
+    @apply bg-[#dd212b] hover:bg-[#a0258a] text-white font-semibold py-3 px-8 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl;
+    font-family: 'Gambarino', 'Stardom', system-ui, sans-serif;
   }
   
   .btn-secondary {
-    @apply bg-white hover:bg-gray-50 text-pink-600 font-semibold py-2 px-6 rounded-full border-2 border-pink-600 transition-colors duration-200;
+    @apply bg-white hover:bg-[#dd212b] text-[#dd212b] hover:text-white font-semibold py-3 px-8 rounded-full border-2 border-[#dd212b] transition-all duration-200;
+    font-family: 'Gambarino', 'Stardom', system-ui, sans-serif;
   }
   
   .input-field {
-    @apply w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent;
+    @apply w-full px-4 py-3 rounded-lg border-2 border-[#dd212b]/30 bg-white text-[#dd212b] focus:outline-none focus:ring-2 focus:ring-[#dd212b] focus:border-[#dd212b] placeholder:text-[#dd212b]/50;
+    font-family: 'Gambarino', 'Stardom', system-ui, sans-serif;
+  }
+  
+  .card {
+    @apply bg-white rounded-2xl shadow-xl border-2 border-[#dd212b]/20;
+  }
+  
+  .font-primary {
+    font-family: 'Gambarino', system-ui, sans-serif;
+  }
+  
+  .font-secondary {
+    font-family: 'Stardom', system-ui, sans-serif;
   }
 }
 

@@ -85,9 +85,14 @@ export function WeddingProvider({ children }) {
 
   // Get user's weddings
   const getUserWeddings = async () => {
-    if (!currentUser) return []
+    console.log('[WeddingContext] getUserWeddings called - currentUser:', currentUser ? currentUser.email : 'null')
+    if (!currentUser) {
+      console.log('[WeddingContext] No currentUser, returning empty array')
+      return []
+    }
     
     try {
+      console.log('[WeddingContext] Querying weddings for user:', currentUser.uid)
       // Query without orderBy to avoid index requirement
       // We'll sort in JavaScript instead
       const q = query(
@@ -95,6 +100,8 @@ export function WeddingProvider({ children }) {
         where('ownerId', '==', currentUser.uid)
       )
       const querySnapshot = await getDocs(q)
+      console.log('[WeddingContext] Query result:', querySnapshot.docs.length, 'weddings found')
+      
       const weddingsList = querySnapshot.docs
         .map(doc => ({
           id: doc.id,
@@ -107,10 +114,11 @@ export function WeddingProvider({ children }) {
           return bTime - aTime
         })
       
+      console.log('[WeddingContext] Returning weddings list:', weddingsList.map(w => w.id))
       setWeddings(weddingsList)
       return weddingsList
     } catch (error) {
-      console.error('Error getting user weddings:', error)
+      console.error('[WeddingContext] Error getting user weddings:', error)
       return []
     }
   }
