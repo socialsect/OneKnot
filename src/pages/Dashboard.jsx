@@ -19,6 +19,7 @@ export default function Dashboard() {
     eventCount: 0,
     galleryCount: 0
   })
+  const [rsvps, setRsvps] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -49,6 +50,18 @@ export default function Dashboard() {
         const rsvpsSnapshot = await getDocs(rsvpsQuery)
         const rsvpCount = rsvpsSnapshot.size
 
+        // Build detailed RSVP list for dashboard table
+        const rsvpsList = rsvpsSnapshot.docs
+          .map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }))
+          .sort((a, b) => {
+            const aTime = a.submittedAt?.toMillis?.() || a.updatedAt?.toMillis?.() || 0
+            const bTime = b.submittedAt?.toMillis?.() || b.updatedAt?.toMillis?.() || 0
+            return bTime - aTime
+          })
+
         // Get unique guest count
         const uniqueGuests = new Set()
         rsvpsSnapshot.forEach(doc => {
@@ -66,6 +79,7 @@ export default function Dashboard() {
           eventCount,
           galleryCount
         })
+        setRsvps(rsvpsList)
       } else {
         // No weddingId - check if we should auto-select
         // Use a separate effect for auto-navigation to avoid loops
@@ -270,7 +284,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Quick Actions */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
                   <Link
                     to={`/dashboard/${weddingId}/invite`}
                     className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition-shadow group"
@@ -315,6 +329,91 @@ export default function Dashboard() {
                     <h3 className="text-xl font-bold mb-2">Guest Updates</h3>
                     <p className="text-gray-600">Send alerts & live updates</p>
                   </Link>
+
+                  <Link
+                    to={`/dashboard/${weddingId}/guests`}
+                    className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition-shadow group"
+                  >
+                    <Users className="w-8 h-8 text-pink-600 mb-3 group-hover:scale-110 transition-transform" />
+                    <h3 className="text-xl font-bold mb-2">Guest Directory</h3>
+                    <p className="text-gray-600">Manage guest list & email consent</p>
+                  </Link>
+                </div>
+
+                {/* Guest RSVPs */}
+                <div className="bg-white rounded-2xl shadow-lg p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-2xl font-bold">Guest RSVPs</h2>
+                    <p className="text-sm text-gray-500">
+                      Showing {rsvps.length} response{rsvps.length === 1 ? '' : 's'}
+                    </p>
+                  </div>
+
+                  {rsvps.length === 0 ? (
+                    <p className="text-gray-500 text-sm">
+                      No RSVPs yet. Share your wedding website link to start collecting responses.
+                    </p>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200 text-sm">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-4 py-2 text-left font-semibold text-gray-700">Guest</th>
+                            <th className="px-4 py-2 text-left font-semibold text-gray-700">Contact</th>
+                            <th className="px-4 py-2 text-left font-semibold text-gray-700">Status</th>
+                            <th className="px-4 py-2 text-left font-semibold text-gray-700">Plus One</th>
+                            <th className="px-4 py-2 text-left font-semibold text-gray-700">Message</th>
+                            <th className="px-4 py-2 text-left font-semibold text-gray-700">When</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {rsvps.map((rsvp) => {
+                            const submittedAt = rsvp.submittedAt?.toDate?.() || rsvp.updatedAt?.toDate?.()
+                            return (
+                              <tr key={rsvp.id}>
+                                <td className="px-4 py-2">
+                                  <div className="font-medium text-gray-900">{rsvp.guestName || 'Unknown'}</div>
+                                  {rsvp.eventId && (
+                                    <div className="text-xs text-gray-500 mt-0.5">Event: {rsvp.eventId}</div>
+                                  )}
+                                </td>
+                                <td className="px-4 py-2">
+                                  <div className="text-gray-900">{rsvp.guestEmail || '-'}</div>
+                                  {rsvp.phoneNumber && (
+                                    <div className="text-xs text-gray-500 mt-0.5">{rsvp.phoneNumber}</div>
+                                  )}
+                                </td>
+                                <td className="px-4 py-2">
+                                  <span className={`inline-flex px-2 py-1 rounded-full text-xs font-semibold ${
+                                    rsvp.status === 'yes'
+                                      ? 'bg-green-100 text-green-700'
+                                      : rsvp.status === 'maybe'
+                                      ? 'bg-yellow-100 text-yellow-700'
+                                      : rsvp.status === 'no'
+                                      ? 'bg-red-100 text-red-700'
+                                      : 'bg-gray-100 text-gray-700'
+                                  }`}>
+                                    {rsvp.status || 'Unknown'}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-2">
+                                  {rsvp.plusOne ? 'Yes' : 'No'}
+                                </td>
+                                <td className="px-4 py-2 max-w-xs">
+                                  <div className="text-gray-700 line-clamp-2">
+                                    {rsvp.message || <span className="text-gray-400">—</span>}
+                                  </div>
+                                </td>
+                                <td className="px-4 py-2 text-xs text-gray-500 whitespace-nowrap">
+                                  {submittedAt ? submittedAt.toLocaleString() : '—'}
+                                </td>
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
                 </div>
               </>
             ) : (

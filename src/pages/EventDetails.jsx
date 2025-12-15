@@ -8,7 +8,7 @@ import { motion } from 'framer-motion'
 export default function EventDetails() {
   const { eventId } = useParams()
   const [event, setEvent] = useState(null)
-  const [rsvp, setRsvp] = useState({ status: '', guestName: '', guestEmail: '', plusOne: false, message: '' })
+  const [rsvp, setRsvp] = useState({ status: '', guestName: '', guestEmail: '', phoneNumber: '', plusOne: false, message: '' })
   const [submitted, setSubmitted] = useState(false)
   const [existingRsvpId, setExistingRsvpId] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -88,6 +88,7 @@ export default function EventDetails() {
           status: existingRsvp.status,
           guestName: existingRsvp.guestName || '',
           guestEmail: existingRsvp.guestEmail || '',
+          phoneNumber: existingRsvp.phoneNumber || '',
           plusOne: existingRsvp.plusOne || false,
           message: existingRsvp.message || ''
         })
@@ -118,6 +119,7 @@ export default function EventDetails() {
         status,
         guestName: rsvp.guestName,
         guestEmail: rsvp.guestEmail,
+        phoneNumber: rsvp.phoneNumber || '',
         plusOne: rsvp.plusOne,
         guestId,
         message: rsvp.message || '',
@@ -139,6 +141,41 @@ export default function EventDetails() {
 
       setRsvp(prev => ({ ...prev, status }))
       setSubmitted(true)
+
+      // Send RSVP confirmation email if email provided
+      if (rsvp.guestEmail && rsvp.guestEmail.trim()) {
+        try {
+          // Load wedding data for email
+          const weddingRef = doc(db, 'weddings', event.weddingId)
+          const weddingSnap = await getDoc(weddingRef)
+          const weddingData = weddingSnap.exists() ? { id: weddingSnap.id, ...weddingSnap.data() } : null
+          
+          if (weddingData) {
+            const websiteUrl = `${window.location.origin}/w/${weddingData.slug}`
+            const weddingName = `${weddingData.partner1Name} & ${weddingData.partner2Name}`
+            
+            await fetch('/api/send-update-email', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                recipientEmails: [rsvp.guestEmail.trim()],
+                weddingName: weddingName,
+                updateMessage: status,
+                eventName: event.name,
+                timeUpdate: null,
+                mapLink: null,
+                websiteUrl: websiteUrl,
+                emailType: 'rsvp-confirmation'
+              })
+            })
+          }
+        } catch (error) {
+          console.error('Error sending RSVP confirmation email:', error)
+          // Don't show error to user - RSVP was successful
+        }
+      }
     } catch (error) {
       console.error('Error submitting RSVP:', error)
       alert('Failed to submit RSVP. Please try again.')
@@ -403,6 +440,19 @@ export default function EventDetails() {
                     className="input-field"
                     placeholder="john@example.com"
                     required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Phone / WhatsApp (optional)
+                  </label>
+                  <input
+                    type="tel"
+                    value={rsvp.phoneNumber}
+                    onChange={(e) => setRsvp(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                    className="input-field"
+                    placeholder="+1 234 567 8900"
                   />
                 </div>
 

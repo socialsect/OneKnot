@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { collection, query, getDocs, addDoc, deleteDoc, doc, serverTimestamp, orderBy } from 'firebase/firestore'
 import { db } from '../config/firebase'
 import { useWedding } from '../contexts/WeddingContext'
-import { Bell, Plus, X, Trash2, MapPin, Clock, MessageSquare, Copy, Check } from 'lucide-react'
+import { Bell, Plus, X, Trash2, MapPin, Clock, MessageSquare, Copy, Check, Mail, Loader2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 export default function UpdatesManagement() {
@@ -21,6 +21,10 @@ export default function UpdatesManagement() {
     timeUpdate: ''
   })
   const [copiedId, setCopiedId] = useState(null)
+  const [guests, setGuests] = useState([])
+  const [sendingEmail, setSendingEmail] = useState(null)
+  const [showEmailModal, setShowEmailModal] = useState(null)
+  const [emailRecipients, setEmailRecipients] = useState([])
 
   useEffect(() => {
     loadData()
@@ -56,6 +60,17 @@ export default function UpdatesManagement() {
         ...doc.data()
       }))
       setUpdates(updatesList)
+
+      // Load guests for email sending
+      const guestsQuery = query(
+        collection(db, 'weddings', weddingId, 'guests')
+      )
+      const guestsSnapshot = await getDocs(guestsQuery)
+      const guestsList = guestsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      setGuests(guestsList)
     } catch (error) {
       console.error('Error loading data:', error)
     } finally {
@@ -159,6 +174,79 @@ export default function UpdatesManagement() {
     return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`
   }
 
+  const getEligibleRecipients = (update) => {
+    return guests.filter(guest => {
+      // Must have email
+      if (!guest.email) return false
+      
+      // Must have consent
+      if (!guest.emailConsent) return false
+      
+      // If update is event-specific, guest must be invited to that event
+      if (update.eventId) {
+        return guest.eventsInvitedTo && guest.eventsInvitedTo.includes(update.eventId)
+      }
+      
+      // If update is for entire wedding, guest just needs consent
+      return true
+    })
+  }
+
+  const handleSendEmailClick = (update) => {
+    const recipients = getEligibleRecipients(update)
+    setEmailRecipients(recipients)
+    setShowEmailModal(update.id)
+  }
+
+  const handleSendEmail = async (update) => {
+    const recipients = getEligibleRecipients(update)
+    
+    if (recipients.length === 0) {
+      alert('No eligible recipients found. Guests must have email addresses, consent to receive emails, and be invited to the relevant event (if event-specific).')
+      setShowEmailModal(null)
+      return
+    }
+
+    setSendingEmail(update.id)
+    
+    try {
+      const event = update.eventId ? events.find(e => e.id === update.eventId) : null
+      const websiteUrl = `${window.location.origin}/w/${wedding.slug}`
+      
+      const response = await fetch('/api/send-update-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          recipientEmails: recipients.map(g => g.email),
+          weddingName: `${wedding.partner1Name} & ${wedding.partner2Name}`,
+          updateMessage: update.message,
+          eventName: event ? event.name : null,
+          timeUpdate: update.timeUpdate || null,
+          mapLink: update.mapLink || null,
+          websiteUrl: websiteUrl,
+          emailType: 'update'
+        })
+      })
+
+      const result = await response.json()
+
+      if (response.ok && result.success) {
+        alert(`Email sent successfully to ${result.sent} recipient${result.sent !== 1 ? 's' : ''}.${result.failed > 0 ? ` ${result.failed} failed.` : ''}`)
+      } else {
+        throw new Error(result.error || 'Failed to send emails')
+      }
+    } catch (error) {
+      console.error('Error sending email:', error)
+      alert('Failed to send emails. Please check your Resend API configuration.')
+    } finally {
+      setSendingEmail(null)
+      setShowEmailModal(null)
+      setEmailRecipients([])
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -246,7 +334,7 @@ export default function UpdatesManagement() {
                   onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
                   className="input-field"
                   rows={4}
-                  placeholder="Important update for guests... (emoji allowed 😊)"
+                  placeholder="Important update for guests..."
                   required
                   maxLength={500}
                 />
@@ -334,7 +422,7 @@ export default function UpdatesManagement() {
             animate={{ opacity: 1, y: 0 }}
             className="bg-white rounded-xl shadow p-12 text-center"
           >
-            <div className="text-6xl mb-4">📢</div>
+            <Bell className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-2xl font-bold mb-2">No updates yet</h3>
             <p className="text-gray-600 mb-6">Create your first update to keep guests informed</p>
             <button
@@ -435,6 +523,23 @@ export default function UpdatesManagement() {
                       <MessageSquare className="w-4 h-4" />
                       Share WhatsApp
                     </button>
+                    <button
+                      onClick={() => handleSendEmailClick(update)}
+                      disabled={sendingEmail === update.id}
+                      className="flex items-center gap-2 px-4 py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-full text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {sendingEmail === update.id ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Mail className="w-4 h-4" />
+                          Send Email
+                        </>
+                      )}
+                    </button>
                     {update.mapLink && (
                       <button
                         onClick={() => copyLocation(update.mapLink)}
@@ -457,6 +562,67 @@ export default function UpdatesManagement() {
                 </motion.div>
               )
             })}
+          </div>
+        )}
+
+        {/* Email Confirmation Modal */}
+        {showEmailModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-xl shadow-xl max-w-md w-full p-6"
+            >
+              <h3 className="text-xl font-bold mb-4">Send Update Email</h3>
+              <p className="text-gray-600 mb-4">
+                This will send an email to guests who have:
+              </p>
+              <ul className="list-disc list-inside text-sm text-gray-600 mb-6 space-y-1">
+                <li>Provided an email address</li>
+                <li>Consented to receive updates</li>
+                <li>Been invited to the relevant event (if event-specific)</li>
+              </ul>
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <p className="text-sm font-medium text-gray-700 mb-1">Recipients:</p>
+                <p className="text-2xl font-bold text-pink-600">{emailRecipients.length}</p>
+                {emailRecipients.length > 0 && (
+                  <div className="mt-2 max-h-32 overflow-y-auto">
+                    {emailRecipients.map(guest => (
+                      <p key={guest.id} className="text-xs text-gray-600">{guest.name} ({guest.email})</p>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {emailRecipients.length === 0 && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-6">
+                  <p className="text-sm text-yellow-800">
+                    No eligible recipients found. Make sure guests have email addresses and consent in the Guest Directory.
+                  </p>
+                </div>
+              )}
+              <div className="flex gap-4">
+                <button
+                  onClick={() => {
+                    setShowEmailModal(null)
+                    setEmailRecipients([])
+                  }}
+                  className="btn-secondary flex-1"
+                  disabled={sendingEmail === showEmailModal}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    const update = updates.find(u => u.id === showEmailModal)
+                    if (update) handleSendEmail(update)
+                  }}
+                  disabled={emailRecipients.length === 0 || sendingEmail === showEmailModal}
+                  className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {sendingEmail === showEmailModal ? 'Sending...' : 'Send Email'}
+                </button>
+              </div>
+            </motion.div>
           </div>
         )}
       </div>

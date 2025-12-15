@@ -4,7 +4,7 @@ import { useWedding } from '../contexts/WeddingContext'
 import { useAuth } from '../contexts/AuthContext'
 import { collection, query, where, getDocs, orderBy, addDoc, deleteDoc, doc, updateDoc, serverTimestamp } from 'firebase/firestore'
 import { db } from '../config/firebase'
-import { Calendar, Clock, MapPin, Shirt, Heart, Camera, ArrowRight, Copy, Check, Share2 } from 'lucide-react'
+import { Calendar, Clock, MapPin, Shirt, Heart, Camera, ArrowRight, Copy, Check, Share2, MessageSquare } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 const themeStyles = {
@@ -59,6 +59,15 @@ export default function WeddingWebsite() {
   const [newMemory, setNewMemory] = useState({ name: '', message: '' })
   const [submittingMemory, setSubmittingMemory] = useState(false)
   const [updates, setUpdates] = useState([])
+  const [countdown, setCountdown] = useState(null)
+  const [weddingRsvp, setWeddingRsvp] = useState({
+    guestName: '',
+    guestEmail: '',
+    phoneNumber: '',
+    plusOne: false,
+    message: ''
+  })
+  const [weddingRsvpSubmitted, setWeddingRsvpSubmitted] = useState(false)
 
   useEffect(() => {
     loadWedding()
@@ -219,6 +228,90 @@ export default function WeddingWebsite() {
     return currentUser && wedding && wedding.ownerId === currentUser.uid
   }
 
+  const handleWeddingRSVP = async (status) => {
+    if (!wedding) return
+    if (!weddingRsvp.guestName.trim() || !weddingRsvp.guestEmail.trim()) {
+      alert('Please enter your name and email')
+      return
+    }
+
+    try {
+      const guestId = localStorage.getItem('weddingGuestId') || `guest_${Date.now()}`
+      localStorage.setItem('weddingGuestId', guestId)
+
+      await addDoc(collection(db, 'weddings', wedding.id, 'rsvps'), {
+        status,
+        guestName: weddingRsvp.guestName.trim(),
+        guestEmail: weddingRsvp.guestEmail.trim(),
+        phoneNumber: weddingRsvp.phoneNumber.trim(),
+        plusOne: weddingRsvp.plusOne,
+        guestId,
+        message: weddingRsvp.message.trim(),
+        submittedAt: new Date()
+      })
+
+      setWeddingRsvp(prev => ({ ...prev, status }))
+      setWeddingRsvpSubmitted(true)
+
+      // Send RSVP confirmation email if email provided
+      if (weddingRsvp.guestEmail && weddingRsvp.guestEmail.trim()) {
+        try {
+          const websiteUrl = `${window.location.origin}/w/${wedding.slug}`
+          const weddingName = `${wedding.partner1Name} & ${wedding.partner2Name}`
+          
+          await fetch('/api/send-update-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              recipientEmails: [weddingRsvp.guestEmail.trim()],
+              weddingName: weddingName,
+              updateMessage: status,
+              eventName: null,
+              timeUpdate: null,
+              mapLink: null,
+              websiteUrl: websiteUrl,
+              emailType: 'rsvp-confirmation'
+            })
+          })
+        } catch (error) {
+          console.error('Error sending RSVP confirmation email:', error)
+          // Don't show error to user - RSVP was successful
+        }
+      }
+    } catch (error) {
+      console.error('Error submitting wedding RSVP:', error)
+      alert('Failed to submit RSVP. Please try again.')
+    }
+  }
+
+  useEffect(() => {
+    // Keep countdown hook order stable; reset when wedding changes
+    if (!wedding) {
+      setCountdown(null)
+      return
+    }
+
+    const weddingDate = wedding.weddingDate?.toDate?.() || new Date(wedding.weddingDate)
+
+    const calculateCountdown = () => {
+      const now = new Date()
+      const diff = weddingDate - now
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000)
+
+      setCountdown({ days, hours, minutes, seconds, isPast: diff < 0 })
+    }
+
+    calculateCountdown()
+    const interval = setInterval(calculateCountdown, 1000)
+
+    return () => clearInterval(interval)
+  }, [wedding])
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
@@ -245,27 +338,6 @@ export default function WeddingWebsite() {
   const weddingDate = wedding.weddingDate?.toDate?.() || new Date(wedding.weddingDate)
   const theme = wedding.theme || 'modern'
   const styles = themeStyles[theme] || themeStyles.modern
-
-  // Calculate countdown with state for live updates
-  const [countdown, setCountdown] = useState(null)
-  
-  useEffect(() => {
-    const calculateCountdown = () => {
-      const now = new Date()
-      const diff = weddingDate - now
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000)
-      
-      setCountdown({ days, hours, minutes, seconds, isPast: diff < 0 })
-    }
-    
-    calculateCountdown()
-    const interval = setInterval(calculateCountdown, 1000)
-    
-    return () => clearInterval(interval)
-  }, [weddingDate])
 
   const copyLink = () => {
     navigator.clipboard.writeText(window.location.href)
@@ -394,7 +466,7 @@ export default function WeddingWebsite() {
       </motion.div>
 
       {/* Quick RSVP Section - Prominent */}
-      {events.length > 0 && (
+      {events.length > 0 ? (
         <section className="py-12 px-4 bg-gradient-to-br from-green-50 to-emerald-50">
           <div className="max-w-4xl mx-auto">
             <motion.div
@@ -418,6 +490,133 @@ export default function WeddingWebsite() {
                 <p className="text-sm text-gray-500 mt-4">
                   Or <Link to="#events" className="text-green-600 hover:underline">view all events</Link> to RSVP to specific ones
                 </p>
+              )}
+            </motion.div>
+          </div>
+        </section>
+      ) : (
+        // Fallback RSVP if no individual events are configured
+        <section className="py-12 px-4 bg-gradient-to-br from-green-50 to-emerald-50">
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-2xl shadow-xl p-8 md:p-10"
+            >
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-800">
+                RSVP to Our Wedding
+              </h2>
+              <p className="text-lg text-gray-600 mb-8 text-center">
+                Let us know if you can join us for the celebration
+              </p>
+
+              {weddingRsvpSubmitted ? (
+                <div className="text-center">
+                  <div className="text-5xl mb-4">🎉</div>
+                  <h3 className="text-2xl font-bold text-green-700 mb-2">
+                    Thank you for your RSVP!
+                  </h3>
+                  <p className="text-gray-700">
+                    We've recorded your response and can't wait to celebrate with you.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Your Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={weddingRsvp.guestName}
+                      onChange={(e) => setWeddingRsvp(prev => ({ ...prev, guestName: e.target.value }))}
+                      className="input-field"
+                      placeholder="John Doe"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Your Email *
+                    </label>
+                    <input
+                      type="email"
+                      value={weddingRsvp.guestEmail}
+                      onChange={(e) => setWeddingRsvp(prev => ({ ...prev, guestEmail: e.target.value }))}
+                      className="input-field"
+                      placeholder="john@example.com"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone / WhatsApp (optional)
+                    </label>
+                    <input
+                      type="tel"
+                      value={weddingRsvp.phoneNumber}
+                      onChange={(e) => setWeddingRsvp(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                      className="input-field"
+                      placeholder="+1 234 567 8900"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="weddingPlusOne"
+                      checked={weddingRsvp.plusOne}
+                      onChange={(e) => setWeddingRsvp(prev => ({ ...prev, plusOne: e.target.checked }))}
+                      className="w-5 h-5 text-pink-600 rounded focus:ring-pink-500"
+                    />
+                    <label htmlFor="weddingPlusOne" className="text-gray-700">
+                      I'm bringing a plus one
+                    </label>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Message (optional)
+                    </label>
+                    <textarea
+                      value={weddingRsvp.message}
+                      onChange={(e) => setWeddingRsvp(prev => ({ ...prev, message: e.target.value }))}
+                      className="input-field"
+                      rows={3}
+                      placeholder="Excited to celebrate with you! 🎉"
+                      maxLength={200}
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      {weddingRsvp.message.length}/200 characters
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <button
+                      type="button"
+                      onClick={() => handleWeddingRSVP('yes')}
+                      className="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-full transition-colors"
+                    >
+                      ✓ Yes, I'll be there!
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleWeddingRSVP('maybe')}
+                      className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-6 rounded-full transition-colors"
+                    >
+                      ? Maybe
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleWeddingRSVP('no')}
+                      className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-full transition-colors"
+                    >
+                      ✗ Can't make it
+                    </button>
+                  </div>
+                </div>
               )}
             </motion.div>
           </div>

@@ -15,6 +15,7 @@ import Gallery from './pages/Gallery'
 import FindMyPhotos from './pages/FindMyPhotos'
 import WeddingSettings from './pages/WeddingSettings'
 import UpdatesManagement from './pages/UpdatesManagement'
+import GuestsManagement from './pages/GuestsManagement'
 import NotFound from './pages/NotFound'
 import ProtectedRoute from './components/ProtectedRoute'
 
@@ -33,6 +34,7 @@ function App() {
             <Route path="/dashboard/:weddingId/invite" element={<ProtectedRoute><InviteGuests /></ProtectedRoute>} />
             <Route path="/dashboard/:weddingId/settings" element={<ProtectedRoute><WeddingSettings /></ProtectedRoute>} />
             <Route path="/dashboard/:weddingId/updates" element={<ProtectedRoute><UpdatesManagement /></ProtectedRoute>} />
+            <Route path="/dashboard/:weddingId/guests" element={<ProtectedRoute><GuestsManagement /></ProtectedRoute>} />
             <Route path="/w/:slug" element={<WeddingWebsite />} />
             <Route path="/invite/:slug" element={<InvitePreview />} />
             <Route path="/event/:eventId" element={<EventDetails />} />

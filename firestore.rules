@@ -132,6 +132,25 @@ service cloud.firestore {
         allow delete: if request.auth != null && 
                          isOwnerOrCollaborator(weddingId);
       }
+      
+      // Guests subcollection (Guest Directory)
+      match /guests/{guestId} {
+        // Allow read if user is owner or collaborator
+        allow read: if request.auth != null && 
+                       isOwnerOrCollaborator(weddingId);
+        
+        // Allow create if user is owner or collaborator
+        allow create: if request.auth != null && 
+                         isOwnerOrCollaborator(weddingId);
+        
+        // Allow update if user is owner or collaborator
+        allow update: if request.auth != null && 
+                         isOwnerOrCollaborator(weddingId);
+        
+        // Allow delete if user is owner or collaborator
+        allow delete: if request.auth != null && 
+                         isOwnerOrCollaborator(weddingId);
+      }
     }
   }
 }
