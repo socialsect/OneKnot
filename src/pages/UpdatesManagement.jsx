@@ -233,6 +233,14 @@ export default function UpdatesManagement() {
       const result = await response.json()
 
       if (response.ok && result.success) {
+        console.log('[EmailSend]', {
+          updateId: update.id,
+          eventId: update.eventId || null,
+          recipients: recipients.length,
+          sent: result.sent,
+          failed: result.failed,
+          timestamp: new Date().toISOString()
+        })
         alert(`Email sent successfully to ${result.sent} recipient${result.sent !== 1 ? 's' : ''}.${result.failed > 0 ? ` ${result.failed} failed.` : ''}`)
       } else {
         throw new Error(result.error || 'Failed to send emails')
@@ -249,7 +257,7 @@ export default function UpdatesManagement() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-bg-primary">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading updates...</p>
@@ -259,8 +267,8 @@ export default function UpdatesManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
+    <div className="min-h-screen bg-bg-primary">
+      <nav className="bg-surface shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <Link to="/" className="flex items-center gap-3">
@@ -269,7 +277,7 @@ export default function UpdatesManagement() {
                 alt="OneKnot Logo" 
                 className="h-8 w-8 object-contain"
               />
-              <span className="text-2xl font-bold text-pink-600">OneKnot</span>
+              <span className="text-2xl font-bold text-accent-primary">OneKnot</span>
             </Link>
             <Link
               to={`/dashboard/${weddingId}`}
@@ -305,7 +313,7 @@ export default function UpdatesManagement() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-xl shadow-lg p-8 mb-8"
+            className="bg-surface rounded-lg border border-border-lg p-8 mb-8"
           >
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">Create New Update</h2>
@@ -420,7 +428,7 @@ export default function UpdatesManagement() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-xl shadow p-12 text-center"
+            className="bg-surface rounded-lg border border-border p-12 text-center"
           >
             <Bell className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-2xl font-bold mb-2">No updates yet</h3>
@@ -442,10 +450,10 @@ export default function UpdatesManagement() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className={`bg-white rounded-xl shadow p-6 ${isLatest ? 'ring-2 ring-pink-500' : ''}`}
+                  className={`bg-surface rounded-lg border border-border p-6 ${isLatest ? 'ring-2 ring-accent-primary' : ''}`}
                 >
                   {isLatest && (
-                    <div className="bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-sm font-semibold inline-block mb-4">
+                    <div className="bg-surface-secondary text-accent-primary px-3 py-1 rounded-full text-sm font-semibold inline-block mb-4">
                       ⭐ Latest Update
                     </div>
                   )}
@@ -453,7 +461,7 @@ export default function UpdatesManagement() {
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <Bell className="w-5 h-5 text-pink-600" />
+                        <Bell className="w-5 h-5 text-accent-primary" />
                         <span className="text-sm font-semibold text-gray-600">
                           {getEventName(update.eventId)}
                         </span>
@@ -475,21 +483,21 @@ export default function UpdatesManagement() {
                   </div>
 
                   {(update.timeUpdate || update.mapLink) && (
-                    <div className="bg-gray-50 rounded-lg p-4 mb-4 space-y-2">
+                    <div className="bg-bg-primary rounded-lg p-4 mb-4 space-y-2">
                       {update.timeUpdate && (
                         <div className="flex items-center gap-2 text-gray-700">
-                          <Clock className="w-4 h-4 text-pink-600" />
+                          <Clock className="w-4 h-4 text-accent-primary" />
                           <span className="font-medium">{update.timeUpdate}</span>
                         </div>
                       )}
                       {update.mapLink && (
                         <div className="flex items-center gap-2 text-gray-700">
-                          <MapPin className="w-4 h-4 text-pink-600" />
+                          <MapPin className="w-4 h-4 text-accent-primary" />
                           <a
                             href={update.mapLink}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-pink-600 hover:underline break-all"
+                            className="text-accent-primary hover:underline break-all"
                           >
                             {update.mapLink}
                           </a>
@@ -526,7 +534,7 @@ export default function UpdatesManagement() {
                     <button
                       onClick={() => handleSendEmailClick(update)}
                       disabled={sendingEmail === update.id}
-                      className="flex items-center gap-2 px-4 py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-full text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex items-center gap-2 px-4 py-2 bg-accent-primary hover:bg-accent-secondary text-white rounded-full text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {sendingEmail === update.id ? (
                         <>
@@ -571,10 +579,10 @@ export default function UpdatesManagement() {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded-xl shadow-xl max-w-md w-full p-6"
+              className="bg-surface rounded-lg border border-border-xl max-w-md w-full p-6"
             >
               <h3 className="text-xl font-bold mb-4">Send Update Email</h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-600 mb-2">
                 This will send an email to guests who have:
               </p>
               <ul className="list-disc list-inside text-sm text-gray-600 mb-6 space-y-1">
@@ -582,9 +590,12 @@ export default function UpdatesManagement() {
                 <li>Consented to receive updates</li>
                 <li>Been invited to the relevant event (if event-specific)</li>
               </ul>
-              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+              <p className="text-xs text-red-600 mb-4">
+                Once sent, emails cannot be undone. Make sure the update text and recipient list look correct before continuing.
+              </p>
+              <div className="bg-bg-primary rounded-lg p-4 mb-6">
                 <p className="text-sm font-medium text-gray-700 mb-1">Recipients:</p>
-                <p className="text-2xl font-bold text-pink-600">{emailRecipients.length}</p>
+                <p className="text-2xl font-bold text-accent-primary">{emailRecipients.length}</p>
                 {emailRecipients.length > 0 && (
                   <div className="mt-2 max-h-32 overflow-y-auto">
                     {emailRecipients.map(guest => (

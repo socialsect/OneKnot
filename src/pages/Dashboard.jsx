@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { useWedding } from '../contexts/WeddingContext'
-import { collection, query, where, getDocs } from 'firebase/firestore'
+import { collection, query, where, getDocs, orderBy } from 'firebase/firestore'
 import { db } from '../config/firebase'
 import { Users, CheckCircle, Calendar, Camera, LogOut, Plus, Settings, ExternalLink, Mail, Copy, Bell } from 'lucide-react'
 import { motion } from 'framer-motion'
@@ -21,6 +21,8 @@ export default function Dashboard() {
   })
   const [rsvps, setRsvps] = useState([])
   const [loading, setLoading] = useState(true)
+  const [eventsList, setEventsList] = useState([])
+  const [updates, setUpdates] = useState([])
 
   useEffect(() => {
     loadDashboard()
@@ -45,6 +47,11 @@ export default function Dashboard() {
         const eventsQuery = query(collection(db, 'weddings', weddingId, 'events'))
         const eventsSnapshot = await getDocs(eventsQuery)
         const eventCount = eventsSnapshot.size
+        const eventsData = eventsSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        setEventsList(eventsData)
 
         const rsvpsQuery = query(collection(db, 'weddings', weddingId, 'rsvps'))
         const rsvpsSnapshot = await getDocs(rsvpsQuery)
@@ -80,6 +87,18 @@ export default function Dashboard() {
           galleryCount
         })
         setRsvps(rsvpsList)
+
+        // Load latest updates for planner view
+        const updatesQuery = query(
+          collection(db, 'weddings', weddingId, 'updates'),
+          orderBy('createdAt', 'desc')
+        )
+        const updatesSnapshot = await getDocs(updatesQuery)
+        const updatesList = updatesSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        setUpdates(updatesList)
       } else {
         // No weddingId - check if we should auto-select
         // Use a separate effect for auto-navigation to avoid loops
@@ -103,15 +122,52 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-primary mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </div>
     )
   }
 
+  const getUserRoleForWedding = () => {
+    if (!currentWedding || !currentUser) return 'owner'
+    const collaborators = currentWedding.collaborators || []
+    const match = collaborators.find(
+      c => c.userId === currentUser.uid || (c.email && c.email.toLowerCase() === currentUser.email?.toLowerCase())
+    )
+    return match?.role || 'owner'
+  }
+
+  const userRole = getUserRoleForWedding()
+  const isPlanner = userRole && userRole !== 'owner'
+
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  const eventsToday = eventsList.filter(event => {
+    if (!event.date) return false
+    const d = event.date.toDate ? event.date.toDate() : new Date(event.date)
+    d.setHours(0, 0, 0, 0)
+    return d.getTime() === today.getTime()
+  })
+
+  const guestCountsByEvent = rsvps.reduce((acc, rsvp) => {
+    const id = rsvp.eventId || 'wedding'
+    if (!acc[id]) {
+      acc[id] = { total: 0 }
+    }
+    acc[id].total += 1
+    return acc
+  }, {})
+
+  const getEventName = (eventId) => {
+    if (!eventId || eventId === 'wedding') return 'Whole Wedding'
+    const event = eventsList.find(e => e.id === eventId)
+    return event ? event.name : eventId
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-bg-primary">
       {/* Navigation */}
       <nav className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4">
@@ -122,7 +178,7 @@ export default function Dashboard() {
                 alt="OneKnot Logo" 
                 className="h-8 w-8 object-contain"
               />
-              <span className="text-2xl font-bold text-pink-600">OneKnot</span>
+              <span className="text-2xl font-bold text-accent-primary">OneKnot</span>
             </Link>
             <div className="flex items-center gap-4">
               <Link to="/create" className="btn-primary flex items-center gap-2">
@@ -176,9 +232,69 @@ export default function Dashboard() {
 
             {currentWedding ? (
               <>
-                {/* Header */}
-                <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-                  <h1 className="text-4xl font-bold mb-2">
+                {/* Planner overview */}
+                {isPlanner && (
+                  <div className="grid lg:grid-cols-3 gap-6 mb-8">
+                    {/* Today's events */}
+                    <div className="bg-white rounded-2xl shadow p-6">
+                      <h2 className="text-lg font-semibold mb-2">Today&apos;s Events</h2>
+                      {eventsToday.length === 0 ? (
+                        <p className="text-sm text-gray-500">No events scheduled for today.</p>
+                      ) : (
+                        <ul className="space-y-2 text-sm text-gray-700">
+                          {eventsToday.map(event => {
+                            const date = event.date?.toDate?.() || new Date(event.date)
+                            return (
+                              <li key={event.id} className="flex justify-between gap-2">
+                                <span className="font-medium">{event.name}</span>
+                                <span className="text-gray-500">
+                                  {event.time || date.toLocaleTimeString()}
+                                </span>
+                              </li>
+                            )
+                          })}
+                        </ul>
+                      )}
+                    </div>
+
+                    {/* Latest updates */}
+                    <div className="bg-white rounded-2xl shadow p-6">
+                      <h2 className="text-lg font-semibold mb-2">Latest Updates</h2>
+                      {updates.length === 0 ? (
+                        <p className="text-sm text-gray-500">No updates yet.</p>
+                      ) : (
+                        <ul className="space-y-2 text-sm text-gray-700">
+                          {updates.slice(0, 3).map(update => (
+                            <li key={update.id}>
+                              <p className="font-medium line-clamp-2">{update.message}</p>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+
+                    {/* Guest counts per event */}
+                    <div className="bg-white rounded-2xl shadow p-6">
+                      <h2 className="text-lg font-semibold mb-2">Guest Counts by Event</h2>
+                      {Object.keys(guestCountsByEvent).length === 0 ? (
+                        <p className="text-sm text-gray-500">No RSVPs yet.</p>
+                      ) : (
+                        <ul className="space-y-1 text-sm text-gray-700">
+                          {Object.entries(guestCountsByEvent).map(([eventId, data]) => (
+                            <li key={eventId} className="flex justify-between gap-2">
+                              <span>{getEventName(eventId)}</span>
+                              <span className="font-semibold">{data.total}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Header (de-emphasized in planner mode) */}
+                <div className={`bg-white rounded-2xl shadow-lg p-8 mb-8 ${isPlanner ? 'border border-gray-100' : ''}`}>
+                  <h1 className="text-3xl md:text-4xl font-bold mb-2">
                     {currentWedding.partner1Name} & {currentWedding.partner2Name}
                   </h1>
                   <p className="text-gray-600 mb-4">
@@ -201,40 +317,43 @@ export default function Dashboard() {
                       <ExternalLink className="w-4 h-4" />
                       View Invite
                     </Link>
-                    <Link
-                      to={`/dashboard/${weddingId}/settings`}
-                      className="btn-secondary flex items-center gap-2"
-                    >
-                      <Settings className="w-4 h-4" />
-                      Settings
-                    </Link>
-                  </div>
-                  <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-600 mb-2 font-medium">Your wedding link:</p>
-                    <div className="flex items-center gap-2">
-                      <code className="flex-1 bg-white px-3 py-2 rounded border text-sm break-all">
-                        {window.location.origin}/w/{currentWedding.slug}
-                      </code>
-                      <button
-                        onClick={(e) => {
-                          navigator.clipboard.writeText(`${window.location.origin}/w/${currentWedding.slug}`)
-                          // Show toast-like feedback
-                          const btn = e.currentTarget
-                          const originalHTML = btn.innerHTML
-                          btn.innerHTML = '<span class="text-green-600">✓ Copied!</span>'
-                          btn.classList.add('bg-green-50')
-                          setTimeout(() => {
-                            btn.innerHTML = originalHTML
-                            btn.classList.remove('bg-green-50')
-                          }, 2000)
-                        }}
-                        className="btn-secondary text-sm whitespace-nowrap"
+                    {!isPlanner && (
+                      <Link
+                        to={`/dashboard/${weddingId}/settings`}
+                        className="btn-secondary flex items-center gap-2"
                       >
-                        <Copy className="w-4 h-4 inline mr-1" />
-                        Copy
-                      </button>
-                    </div>
+                        <Settings className="w-4 h-4" />
+                        Settings
+                      </Link>
+                    )}
                   </div>
+                  {!isPlanner && (
+                    <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                      <p className="text-sm text-gray-600 mb-2 font-medium">Your wedding link:</p>
+                      <div className="flex items-center gap-2">
+                        <code className="flex-1 bg-white px-3 py-2 rounded border text-sm break-all">
+                          {window.location.origin}/w/{currentWedding.slug}
+                        </code>
+                        <button
+                          onClick={(e) => {
+                            navigator.clipboard.writeText(`${window.location.origin}/w/${currentWedding.slug}`)
+                            const btn = e.currentTarget
+                            const originalHTML = btn.innerHTML
+                            btn.innerHTML = '<span class="text-green-600">Copied</span>'
+                            btn.classList.add('bg-green-50')
+                            setTimeout(() => {
+                              btn.innerHTML = originalHTML
+                              btn.classList.remove('bg-green-50')
+                            }, 2000)
+                          }}
+                          className="btn-secondary text-sm whitespace-nowrap"
+                        >
+                          <Copy className="w-4 h-4 inline mr-1" />
+                          Copy
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Stats */}
@@ -242,10 +361,11 @@ export default function Dashboard() {
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-xl shadow p-6"
+                    className="bg-surface rounded-lg border border-border p-6"
+                    style={{ boxShadow: '0 6px 20px rgba(0,0,0,0.06)' }}
                   >
-                    <Users className="w-8 h-8 text-pink-600 mb-2" />
-                    <div className="text-3xl font-bold text-pink-600">{stats.guestCount}</div>
+                    <Users className="w-8 h-8 text-accent-primary mb-2" />
+                    <div className="text-3xl font-bold text-accent-primary">{stats.guestCount}</div>
                     <div className="text-gray-600">Guests</div>
                   </motion.div>
 
@@ -255,8 +375,8 @@ export default function Dashboard() {
                     transition={{ delay: 0.1 }}
                     className="bg-white rounded-xl shadow p-6"
                   >
-                    <CheckCircle className="w-8 h-8 text-pink-600 mb-2" />
-                    <div className="text-3xl font-bold text-pink-600">{stats.rsvpCount}</div>
+                    <CheckCircle className="w-8 h-8 text-accent-primary mb-2" />
+                    <div className="text-3xl font-bold text-accent-primary">{stats.rsvpCount}</div>
                     <div className="text-gray-600">RSVPs</div>
                   </motion.div>
 
@@ -266,8 +386,8 @@ export default function Dashboard() {
                     transition={{ delay: 0.2 }}
                     className="bg-white rounded-xl shadow p-6"
                   >
-                    <Calendar className="w-8 h-8 text-pink-600 mb-2" />
-                    <div className="text-3xl font-bold text-pink-600">{stats.eventCount}</div>
+                    <Calendar className="w-8 h-8 text-accent-primary mb-2" />
+                    <div className="text-3xl font-bold text-accent-primary">{stats.eventCount}</div>
                     <div className="text-gray-600">Events</div>
                   </motion.div>
 
@@ -277,8 +397,8 @@ export default function Dashboard() {
                     transition={{ delay: 0.3 }}
                     className="bg-white rounded-xl shadow p-6"
                   >
-                    <Camera className="w-8 h-8 text-pink-600 mb-2" />
-                    <div className="text-3xl font-bold text-pink-600">{stats.galleryCount}</div>
+                    <Camera className="w-8 h-8 text-accent-primary mb-2" />
+                    <div className="text-3xl font-bold text-accent-primary">{stats.galleryCount}</div>
                     <div className="text-gray-600">Photos</div>
                   </motion.div>
                 </div>
@@ -289,7 +409,7 @@ export default function Dashboard() {
                     to={`/dashboard/${weddingId}/invite`}
                     className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition-shadow group"
                   >
-                    <Mail className="w-8 h-8 text-pink-600 mb-3 group-hover:scale-110 transition-transform" />
+                    <Mail className="w-8 h-8 text-accent-primary mb-3 group-hover:scale-110 transition-transform" />
                     <h3 className="text-xl font-bold mb-2">Invite Guests</h3>
                     <p className="text-gray-600">Send email & SMS invitations</p>
                   </Link>
@@ -298,7 +418,7 @@ export default function Dashboard() {
                     to={`/dashboard/${weddingId}/events`}
                     className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition-shadow group"
                   >
-                    <Calendar className="w-8 h-8 text-pink-600 mb-3 group-hover:scale-110 transition-transform" />
+                    <Calendar className="w-8 h-8 text-accent-primary mb-3 group-hover:scale-110 transition-transform" />
                     <h3 className="text-xl font-bold mb-2">Manage Events</h3>
                     <p className="text-gray-600">Add and edit wedding events</p>
                   </Link>
@@ -316,7 +436,7 @@ export default function Dashboard() {
                     to={`/gallery/${weddingId}`}
                     className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition-shadow group"
                   >
-                    <Camera className="w-8 h-8 text-pink-600 mb-3 group-hover:scale-110 transition-transform" />
+                    <Camera className="w-8 h-8 text-accent-primary mb-3 group-hover:scale-110 transition-transform" />
                     <h3 className="text-xl font-bold mb-2">Gallery</h3>
                     <p className="text-gray-600">View and manage photos</p>
                   </Link>
@@ -325,7 +445,7 @@ export default function Dashboard() {
                     to={`/dashboard/${weddingId}/updates`}
                     className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition-shadow group"
                   >
-                    <Bell className="w-8 h-8 text-pink-600 mb-3 group-hover:scale-110 transition-transform" />
+                    <Bell className="w-8 h-8 text-accent-primary mb-3 group-hover:scale-110 transition-transform" />
                     <h3 className="text-xl font-bold mb-2">Guest Updates</h3>
                     <p className="text-gray-600">Send alerts & live updates</p>
                   </Link>
@@ -341,7 +461,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Guest RSVPs */}
-                <div className="bg-white rounded-2xl shadow-lg p-6">
+                <div className="bg-surface rounded-xl border border-border p-6" style={{ boxShadow: '0 6px 20px rgba(0,0,0,0.06)' }}>
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-2xl font-bold">Guest RSVPs</h2>
                     <p className="text-sm text-gray-500">
@@ -422,7 +542,6 @@ export default function Dashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 className="text-center py-20 bg-white rounded-xl shadow"
               >
-                <div className="text-6xl mb-4">💒</div>
                 <h2 className="text-2xl font-bold mb-4">Select a wedding</h2>
                 {weddings.length > 0 ? (
                   <p className="text-gray-600">Choose a wedding from the dropdown above</p>

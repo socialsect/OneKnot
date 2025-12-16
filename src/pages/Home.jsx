@@ -7,9 +7,9 @@ export default function Home() {
   const { currentUser } = useAuth()
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-bg-primary">
       {/* Navigation */}
-      <nav className="container mx-auto px-4 py-6 border-b-2 border-[#dd212b]/20">
+      <nav className="container mx-auto px-4 py-6 border-b border-border">
         <div className="flex justify-between items-center">
           <Link to="/" className="flex items-center gap-3">
             <img 
@@ -17,7 +17,7 @@ export default function Home() {
               alt="OneKnot Logo" 
               className="h-8 w-8 md:h-10 md:w-10 object-contain"
             />
-            <h1 className="text-2xl font-bold text-[#dd212b]">OneKnot</h1>
+            <h1 className="text-2xl font-bold text-accent-primary">OneKnot</h1>
           </Link>
           <div className="flex gap-4">
             {currentUser ? (
@@ -49,7 +49,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 text-[#dd212b] leading-tight"
+          className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 text-text-primary leading-tight"
         >
           Run Your Wedding<br />From One Link
         </motion.h1>
@@ -58,7 +58,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="text-xl md:text-2xl lg:text-3xl text-[#dd212b] mb-6 max-w-4xl mx-auto leading-relaxed font-medium"
+          className="text-xl md:text-2xl lg:text-3xl text-text-primary mb-6 max-w-4xl mx-auto leading-relaxed font-medium"
         >
           OneKnot is a wedding command center.
         </motion.p>
@@ -67,7 +67,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="text-lg md:text-xl text-[#dd212b]/80 mb-10 max-w-3xl mx-auto leading-relaxed"
+          className="text-lg md:text-xl text-text-secondary mb-10 max-w-3xl mx-auto leading-relaxed"
         >
           Share events, locations, dress codes, live updates, RSVPs, and photos — so you don't spend your wedding answering the same questions all day.
         </motion.p>
@@ -81,12 +81,13 @@ export default function Home() {
           >
             <Link 
               to="/login" 
-              className="bg-gradient-to-r from-pink-600 to-purple-600 text-white font-bold text-lg px-10 py-4 rounded-full flex items-center gap-2 hover:scale-105 transition-all shadow-xl hover:shadow-2xl"
+              className="bg-accent-primary hover:bg-accent-secondary text-white font-bold text-lg px-10 py-4 rounded-lg flex items-center gap-2 transition-all"
+              style={{ boxShadow: '0 6px 20px rgba(0,0,0,0.06)' }}
             >
               Create Your Wedding Link
               <ArrowRight className="w-5 h-5" />
             </Link>
-            <p className="text-sm text-[#dd212b]/70">
+            <p className="text-sm text-text-secondary">
               Takes 2 minutes • Free to start
             </p>
           </motion.div>
@@ -100,7 +101,8 @@ export default function Home() {
           >
             <Link 
               to="/dashboard" 
-              className="bg-gradient-to-r from-pink-600 to-purple-600 text-white font-bold text-lg px-10 py-4 rounded-full flex items-center gap-2 w-fit mx-auto hover:scale-105 transition-all shadow-xl"
+              className="bg-accent-primary hover:bg-accent-secondary text-white font-bold text-lg px-10 py-4 rounded-lg flex items-center gap-2 w-fit mx-auto transition-all"
+              style={{ boxShadow: '0 6px 20px rgba(0,0,0,0.06)' }}
             >
               Go to Dashboard
               <ArrowRight className="w-5 h-5" />
@@ -120,8 +122,8 @@ export default function Home() {
               transition={{ delay: 0.1 }}
               className="card p-8 hover:shadow-2xl transition-all"
             >
-              <div className="w-14 h-14 bg-pink-100 rounded-xl flex items-center justify-center mb-6">
-                <Bell className="w-7 h-7 text-pink-600" />
+              <div className="w-14 h-14 bg-surface-secondary rounded-xl flex items-center justify-center mb-6">
+                <Bell className="w-7 h-7 text-accent-primary" />
               </div>
               <h3 className="text-2xl font-bold mb-4 text-gray-800">Live Guest Updates</h3>
               <p className="text-gray-600 leading-relaxed">
@@ -213,12 +215,12 @@ export default function Home() {
                     {step.step}
                   </div>
                 </div>
-                <div className="flex-1 bg-white p-6 rounded-2xl shadow-lg">
+                <div className="flex-1 bg-surface p-6 rounded-xl border border-border" style={{ boxShadow: '0 6px 20px rgba(0,0,0,0.06)' }}>
                   <div className="flex items-center gap-3 mb-3">
-                    <Icon className="w-6 h-6 text-pink-600" />
-                    <h3 className="text-2xl font-bold text-gray-800">{step.title}</h3>
+                    <Icon className="w-6 h-6 text-accent-primary" />
+                    <h3 className="text-2xl font-bold text-text-primary">{step.title}</h3>
                   </div>
-                  <p className="text-lg text-gray-600 leading-relaxed">{step.description}</p>
+                  <p className="text-lg text-text-secondary leading-relaxed">{step.description}</p>
                 </div>
               </motion.div>
             )
@@ -272,7 +274,7 @@ export default function Home() {
       </section>
 
       {/* Real Wedding Day Scenarios */}
-      <section className="container mx-auto px-4 py-16 md:py-24 bg-[#dd212b]/5 rounded-3xl mx-4 md:mx-auto border-2 border-[#dd212b]/20">
+      <section className="container mx-auto px-4 py-16 md:py-24 bg-surface-secondary rounded-xl mx-4 md:mx-auto border border-border">
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -283,7 +285,7 @@ export default function Home() {
             <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-800">
               Real Wedding Day Scenarios
             </h2>
-            <p className="text-xl text-[#dd212b]/80 max-w-2xl mx-auto">
+            <p className="text-xl text-text-secondary max-w-2xl mx-auto">
               See how OneKnot handles the chaos that breaks other weddings
             </p>
           </motion.div>
@@ -319,19 +321,19 @@ export default function Home() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="card p-6 border-l-4 border-[#dd212b]"
+                  className="card p-6 border-l-4 border-accent-primary"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-[#dd212b]/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <X className="w-6 h-6 text-[#dd212b]" />
+                    <div className="w-12 h-12 bg-surface-secondary rounded-lg flex items-center justify-center flex-shrink-0">
+                      <X className="w-6 h-6 text-accent-primary" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-lg font-semibold text-[#dd212b] mb-2">{scenario.problem}</p>
-                      <div className="flex items-start gap-3 mt-3 pt-3 border-t border-[#dd212b]/20">
-                        <div className="w-12 h-12 bg-[#dd212b]/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <Icon className="w-6 h-6 text-[#dd212b]" />
+                      <p className="text-lg font-semibold text-accent-primary mb-2">{scenario.problem}</p>
+                      <div className="flex items-start gap-3 mt-3 pt-3 border-t border-border">
+                        <div className="w-12 h-12 bg-surface-secondary rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Icon className="w-6 h-6 text-accent-primary" />
                         </div>
-                        <p className="text-[#dd212b]/80 leading-relaxed">{scenario.solution}</p>
+                        <p className="text-text-secondary leading-relaxed">{scenario.solution}</p>
                       </div>
                     </div>
                   </div>
@@ -354,7 +356,7 @@ export default function Home() {
             <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-800">
               What You Get
             </h2>
-            <p className="text-xl text-[#dd212b]/80 max-w-2xl mx-auto">
+            <p className="text-xl text-text-secondary max-w-2xl mx-auto">
               Everything you need to run your wedding smoothly
             </p>
           </motion.div>
@@ -412,13 +414,13 @@ export default function Home() {
                   transition={{ delay: index * 0.1 }}
                   className="card p-6 hover:shadow-2xl transition-all"
                 >
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-[#dd212b]/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Icon className="w-6 h-6 text-[#dd212b]" />
+                    <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-surface-secondary rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-6 h-6 text-accent-primary" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold mb-2 text-[#dd212b]">{feature.title}</h3>
-                      <p className="text-[#dd212b]/80 leading-relaxed">{feature.description}</p>
+                      <h3 className="text-xl font-bold mb-2 text-accent-primary">{feature.title}</h3>
+                      <p className="text-text-secondary leading-relaxed">{feature.description}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -436,9 +438,9 @@ export default function Home() {
           viewport={{ once: true }}
           className="max-w-3xl mx-auto"
         >
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-[#dd212b] leading-tight">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-text-primary leading-tight">
             OneKnot isn't a wedding website.<br />
-            <span className="text-[#dd212b]">
+            <span className="text-accent-primary">
               It's a wedding control center.
             </span>
           </h2>
@@ -456,7 +458,8 @@ export default function Home() {
           >
             <Link 
               to="/login" 
-              className="inline-block bg-gradient-to-r from-pink-600 to-purple-600 text-white font-bold text-lg px-10 py-4 rounded-full hover:scale-105 transition-all shadow-xl hover:shadow-2xl mb-4"
+              className="inline-block bg-accent-primary hover:bg-accent-secondary text-white font-bold text-lg px-10 py-4 rounded-lg transition-all mb-4"
+              style={{ boxShadow: '0 6px 20px rgba(0,0,0,0.06)' }}
             >
               Create Your Wedding Link
               <ArrowRight className="w-5 h-5 inline ml-2" />

@@ -7,8 +7,8 @@ import { Settings, Save, X, Upload, Image as ImageIcon } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 const themes = [
-  { id: 'classic', name: 'Classic', color: 'bg-rose-200' },
-  { id: 'modern', name: 'Modern', color: 'bg-pink-200' },
+  { id: 'classic', name: 'Classic', color: 'bg-surface-secondary' },
+  { id: 'modern', name: 'Modern', color: 'bg-surface-secondary' },
   { id: 'rustic', name: 'Rustic', color: 'bg-amber-200' },
   { id: 'beach', name: 'Beach', color: 'bg-blue-200' },
   { id: 'garden', name: 'Garden', color: 'bg-green-200' },
@@ -179,7 +179,7 @@ export default function WeddingSettings() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-primary mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading wedding settings...</p>
         </div>
       </div>
@@ -191,7 +191,7 @@ export default function WeddingSettings() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-4">Wedding not found</h1>
-          <Link to="/dashboard" className="text-pink-600 hover:underline">Back to Dashboard</Link>
+          <Link to="/dashboard" className="text-accent-primary hover:underline">Back to Dashboard</Link>
         </div>
       </div>
     )
@@ -209,7 +209,7 @@ export default function WeddingSettings() {
                 alt="OneKnot Logo" 
                 className="h-8 w-8 object-contain"
               />
-              <span className="text-2xl font-bold text-pink-600">OneKnot</span>
+              <span className="text-2xl font-bold text-accent-primary">OneKnot</span>
             </Link>
             <Link
               to={`/dashboard/${weddingId}`}
@@ -228,7 +228,7 @@ export default function WeddingSettings() {
           className="bg-white rounded-2xl shadow-lg p-8"
         >
           <div className="flex items-center gap-3 mb-8">
-            <Settings className="w-8 h-8 text-pink-600" />
+            <Settings className="w-8 h-8 text-accent-primary" />
             <h1 className="text-4xl font-bold">Wedding Settings</h1>
           </div>
 
@@ -364,7 +364,7 @@ export default function WeddingSettings() {
                     onClick={() => setFormData(prev => ({ ...prev, theme: theme.id }))}
                     className={`p-4 rounded-lg border-2 transition-all ${
                       formData.theme === theme.id
-                        ? 'border-pink-600 ring-2 ring-pink-200'
+                        ? 'border-accent-primary ring-2 ring-accent-primary/20'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >

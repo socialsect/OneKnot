@@ -24,34 +24,77 @@
   }
   
   body {
-    @apply bg-white text-[#dd212b];
+    background-color: #F6F1EB; /* bg-primary */
+    color: #2B2B2B; /* text-primary */
     font-family: 'Gambarino', 'Stardom', system-ui, sans-serif;
   }
   
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Gambarino', 'Stardom', system-ui, sans-serif;
-    color: #dd212b;
+    color: #2B2B2B;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-[#dd212b] hover:bg-[#a0258a] text-white font-semibold py-3 px-8 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl;
+    background-color: #C8A96A; /* accent-primary */
+    color: #FFFFFF;
+    font-weight: 600;
+    padding: 0.75rem 2rem;
+    border-radius: 0.5rem;
+    transition-property: background-color, color, box-shadow, transform;
+    transition-duration: 200ms;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
     font-family: 'Gambarino', 'Stardom', system-ui, sans-serif;
+  }
+
+  .btn-primary:hover {
+    background-color: #A88F5C; /* accent-secondary */
   }
   
   .btn-secondary {
-    @apply bg-white hover:bg-[#dd212b] text-[#dd212b] hover:text-white font-semibold py-3 px-8 rounded-full border-2 border-[#dd212b] transition-all duration-200;
+    background-color: #FFFFFF; /* surface */
+    color: #C8A96A; /* accent-primary */
+    font-weight: 600;
+    padding: 0.75rem 2rem;
+    border-radius: 0.5rem;
+    border: 1px solid #DDD4C8; /* border */
+    transition-property: background-color, color, box-shadow, transform, border-color;
+    transition-duration: 200ms;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
     font-family: 'Gambarino', 'Stardom', system-ui, sans-serif;
+  }
+
+  .btn-secondary:hover {
+    background-color: #F9F5F0; /* surface-secondary */
+    color: #A88F5C; /* accent-secondary */
   }
   
   .input-field {
-    @apply w-full px-4 py-3 rounded-lg border-2 border-[#dd212b]/30 bg-white text-[#dd212b] focus:outline-none focus:ring-2 focus:ring-[#dd212b] focus:border-[#dd212b] placeholder:text-[#dd212b]/50;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #DDD4C8; /* border */
+    background-color: #FFFFFF; /* surface */
+    color: #2B2B2B; /* text-primary */
+    outline: none;
     font-family: 'Gambarino', 'Stardom', system-ui, sans-serif;
+  }
+
+  .input-field::placeholder {
+    color: #6B6258; /* text-secondary */
+  }
+
+  .input-field:focus {
+    border-color: #C8A96A; /* accent-primary */
+    box-shadow: 0 0 0 2px rgba(200, 169, 106, 0.3);
   }
   
   .card {
-    @apply bg-white rounded-2xl shadow-xl border-2 border-[#dd212b]/20;
+    background-color: #FFFFFF; /* surface */
+    border-radius: 0.75rem;
+    border: 1px solid #DDD4C8; /* border */
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
   }
   
   .font-primary {

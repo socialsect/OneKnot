@@ -188,9 +188,9 @@ export default function EventDetails() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+      <div className="min-h-screen flex items-center justify-center bg-bg-primary">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-primary mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading event details...</p>
         </div>
       </div>
@@ -202,7 +202,7 @@ export default function EventDetails() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-4">Event not found</h1>
-          <Link to="/" className="text-pink-600 hover:underline">Go home</Link>
+          <Link to="/" className="text-accent-primary hover:underline">Go home</Link>
         </div>
       </div>
     )
@@ -226,7 +226,7 @@ export default function EventDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 py-12 px-4">
+    <div className="min-h-screen bg-bg-primary py-12 px-4">
       <div className="max-w-3xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -265,7 +265,7 @@ export default function EventDetails() {
                       href={`https://maps.google.com/?q=${encodeURIComponent(event.locationAddress)}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block text-pink-600 hover:underline text-sm mt-1"
+                      className="block text-accent-primary hover:underline text-sm mt-1"
                     >
                       View on Google Maps
                     </a>
@@ -366,11 +366,11 @@ export default function EventDetails() {
                     className="bg-gray-50 rounded-lg p-5"
                   >
                     <h3 className="font-semibold text-gray-800 mb-2 flex items-start gap-2">
-                      <span className="text-pink-600">Q:</span>
+                      <span className="text-accent-primary">Q:</span>
                       <span>{faq.question}</span>
                     </h3>
                     <p className="text-gray-700 ml-6 leading-relaxed">
-                      <span className="text-pink-600 font-medium">A: </span>
+                      <span className="text-accent-primary font-medium">A: </span>
                       {faq.answer}
                     </p>
                   </motion.div>
@@ -387,7 +387,7 @@ export default function EventDetails() {
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-8 text-center"
+                className="bg-surface-secondary border-2 border-green-200 rounded-xl p-8 text-center"
               >
                 <div className="text-6xl mb-4">🎉</div>
                 <h3 className="text-2xl font-bold text-green-800 mb-2">
@@ -462,7 +462,7 @@ export default function EventDetails() {
                     id="plusOne"
                     checked={rsvp.plusOne}
                     onChange={(e) => setRsvp(prev => ({ ...prev, plusOne: e.target.checked }))}
-                    className="w-5 h-5 text-pink-600 rounded focus:ring-pink-500"
+                    className="w-5 h-5 text-accent-primary rounded focus:ring-accent-primary"
                   />
                   <label htmlFor="plusOne" className="text-gray-700">
                     I'm bringing a plus one

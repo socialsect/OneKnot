@@ -59,10 +59,10 @@ export default function InvitePreview() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+      <div className="min-h-screen flex items-center justify-center bg-bg-primary">
         <div className="text-center">
-          <Heart className="w-16 h-16 text-pink-600 mx-auto mb-4 animate-pulse fill-pink-600" />
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto"></div>
+          <Heart className="w-16 h-16 text-accent-primary mx-auto mb-4 animate-pulse fill-accent-primary" />
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-primary mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading invite...</p>
         </div>
       </div>
@@ -82,19 +82,19 @@ export default function InvitePreview() {
   const weddingDate = wedding.weddingDate?.toDate?.() || new Date(wedding.weddingDate)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-bg-primary flex items-center justify-center px-4 py-12">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 max-w-2xl w-full"
+        className="bg-white rounded-3xl border border-border p-8 md:p-12 max-w-2xl w-full"
       >
         {/* Invite Design */}
         <div className="text-center mb-8">
-          <Heart className="w-16 h-16 mx-auto mb-4 text-pink-600 fill-pink-600" />
+          <Heart className="w-16 h-16 mx-auto mb-4 text-accent-primary fill-accent-primary" />
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             You're Invited!
           </h1>
-          <h2 className="text-3xl md:text-4xl font-bold text-pink-600 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-accent-primary mb-4">
             {wedding.partner1Name} & {wedding.partner2Name}
           </h2>
           <div className="text-xl text-gray-600 mb-2">
@@ -142,9 +142,9 @@ export default function InvitePreview() {
             <div className="grid grid-cols-2 gap-3 mb-6">
               <Link
                 to={`/gallery/${wedding.id}`}
-                className="flex flex-col items-center justify-center p-4 bg-pink-50 hover:bg-pink-100 rounded-xl transition-all group"
+                className="flex flex-col items-center justify-center p-4 bg-surface-secondary hover:bg-surface rounded-xl transition-all group"
               >
-                <Camera className="w-6 h-6 text-pink-600 mb-2 group-hover:scale-110 transition-transform" />
+                <Camera className="w-6 h-6 text-accent-primary mb-2 group-hover:scale-110 transition-transform" />
                 <span className="text-sm font-semibold text-gray-700">View Gallery</span>
               </Link>
               <Link

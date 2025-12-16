@@ -152,7 +152,7 @@ export default function ContactsManagement() {
                 alt="OneKnot Logo" 
                 className="h-8 w-8 object-contain"
               />
-              <span className="text-2xl font-bold text-pink-600">OneKnot</span>
+              <span className="text-2xl font-bold text-accent-primary">OneKnot</span>
             </Link>
             <Link
               to={`/dashboard/${weddingId}`}
@@ -279,7 +279,7 @@ export default function ContactsManagement() {
                   className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-pink-600">
+                    <div className="w-10 h-10 rounded-full bg-surface-secondary flex items-center justify-center text-accent-primary">
                       {getRoleIcon(collab.role)}
                     </div>
                     <div>
@@ -366,7 +366,7 @@ export default function ContactsManagement() {
                 <div className="text-sm text-gray-600 text-right">
                   <div>{guest.rsvpCount} RSVP{guest.rsvpCount !== 1 ? 's' : ''}</div>
                   {guest.messages && guest.messages.length > 0 && (
-                    <div className="text-xs text-pink-600 mt-1">
+                    <div className="text-xs text-accent-primary mt-1">
                       {guest.messages.length} note{guest.messages.length !== 1 ? 's' : ''}
                     </div>
                   )}

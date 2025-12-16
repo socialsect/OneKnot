@@ -174,7 +174,7 @@ export default function EventsManagement() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-bg-primary">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading events...</p>
@@ -184,9 +184,9 @@ export default function EventsManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-bg-primary">
       {/* Navigation */}
-      <nav className="bg-white shadow-sm">
+      <nav className="bg-surface shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <Link to="/" className="flex items-center gap-3">
@@ -195,7 +195,7 @@ export default function EventsManagement() {
                 alt="OneKnot Logo" 
                 className="h-8 w-8 object-contain"
               />
-              <span className="text-2xl font-bold text-pink-600">OneKnot</span>
+              <span className="text-2xl font-bold text-accent-primary">OneKnot</span>
             </Link>
             <div className="flex items-center gap-4">
               <Link
@@ -235,7 +235,7 @@ export default function EventsManagement() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-xl shadow-lg p-8 mb-8"
+            className="bg-surface rounded-xl shadow-lg p-8 mb-8"
           >
             <h2 className="text-2xl font-bold mb-6">
               {editingEvent ? 'Edit Event' : 'Create New Event'}
@@ -356,7 +356,7 @@ export default function EventsManagement() {
                   <button
                     type="button"
                     onClick={addFAQ}
-                    className="text-sm text-pink-600 hover:text-pink-700 font-medium"
+                    className="text-sm text-accent-primary hover:text-pink-700 font-medium"
                   >
                     + Add FAQ
                   </button>
@@ -366,7 +366,7 @@ export default function EventsManagement() {
                 ) : (
                   <div className="space-y-4">
                     {formData.faqs.map((faq, index) => (
-                      <div key={index} className="bg-gray-50 rounded-lg p-4 space-y-3">
+                      <div key={index} className="bg-bg-primary rounded-lg p-4 space-y-3">
                         <div className="flex justify-between items-start">
                           <span className="text-xs font-semibold text-gray-600">FAQ #{index + 1}</span>
                           <button
@@ -425,7 +425,7 @@ export default function EventsManagement() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-xl shadow p-12 text-center"
+            className="bg-surface rounded-xl shadow p-12 text-center"
           >
             <div className="text-6xl mb-4">📅</div>
             <h3 className="text-2xl font-bold mb-2">No events yet</h3>
@@ -447,7 +447,7 @@ export default function EventsManagement() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="bg-white rounded-xl shadow p-6"
+                  className="bg-surface rounded-xl shadow p-6"
                 >
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div className="flex-1">

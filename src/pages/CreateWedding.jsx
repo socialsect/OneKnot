@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 
 const themes = [
   { id: 'classic', name: 'Classic', color: 'bg-rose-200' },
-  { id: 'modern', name: 'Modern', color: 'bg-pink-200' },
+  { id: 'modern', name: 'Modern', color: 'bg-surface-secondary' },
   { id: 'rustic', name: 'Rustic', color: 'bg-amber-200' },
   { id: 'beach', name: 'Beach', color: 'bg-blue-200' },
   { id: 'garden', name: 'Garden', color: 'bg-green-200' },
@@ -59,12 +59,12 @@ export default function CreateWedding() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 py-12 px-4">
+    <div className="min-h-screen bg-bg-primary py-12 px-4">
       <div className="max-w-2xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-xl p-8"
+          className="bg-white rounded-xl border border-border p-8"
         >
           <h1 className="text-3xl font-bold mb-2">Create Your Wedding</h1>
           <p className="text-gray-600 mb-8">Let's set up your OneKnot wedding link</p>
@@ -143,7 +143,7 @@ export default function CreateWedding() {
                     onClick={() => setFormData(prev => ({ ...prev, theme: theme.id }))}
                     className={`p-4 rounded-lg border-2 transition-all ${
                       formData.theme === theme.id
-                        ? 'border-pink-600 ring-2 ring-pink-200'
+                        ? 'border-accent-primary ring-2 ring-accent-primary/20'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >

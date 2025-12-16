@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-bg-primary flex items-center justify-center px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -17,7 +17,7 @@ export default function NotFound() {
           transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
           className="mb-8"
         >
-          <div className="text-9xl font-bold text-pink-600 opacity-20">404</div>
+          <div className="text-9xl font-bold text-accent-primary opacity-20">404</div>
         </motion.div>
 
         <motion.h1
@@ -46,7 +46,7 @@ export default function NotFound() {
         >
           <Link
             to="/"
-            className="bg-gradient-to-r from-pink-600 to-purple-600 text-white font-bold text-lg px-8 py-4 rounded-full flex items-center gap-2 hover:scale-105 transition-all shadow-xl hover:shadow-2xl"
+            className="bg-accent-primary hover:bg-accent-secondary text-white font-bold text-lg px-8 py-4 rounded-full flex items-center gap-2 hover:scale-105 transition-all shadow-xl hover:shadow-2xl"
           >
             <Home className="w-5 h-5" />
             Go Home
@@ -54,7 +54,7 @@ export default function NotFound() {
           
           <button
             onClick={() => window.history.back()}
-            className="bg-white text-pink-600 font-semibold text-lg px-8 py-4 rounded-full border-2 border-pink-600 hover:bg-pink-50 transition-all shadow-lg flex items-center gap-2"
+            className="bg-white text-accent-primary font-semibold text-lg px-8 py-4 rounded-full border-2 border-accent-primary hover:bg-surface-secondary transition-all shadow-lg flex items-center gap-2"
           >
             <ArrowLeft className="w-5 h-5" />
             Go Back
@@ -68,19 +68,19 @@ export default function NotFound() {
           className="mt-12 p-6 bg-white rounded-2xl shadow-lg"
         >
           <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center justify-center gap-2">
-            <Search className="w-5 h-5 text-pink-600" />
+            <Search className="w-5 h-5 text-accent-primary" />
             Popular Pages
           </h2>
           <div className="flex flex-wrap justify-center gap-4">
             <Link
               to="/"
-              className="text-pink-600 hover:text-pink-700 hover:underline font-medium"
+              className="text-accent-primary hover:text-pink-700 hover:underline font-medium"
             >
               Home
             </Link>
             <Link
               to="/login"
-              className="text-pink-600 hover:text-pink-700 hover:underline font-medium"
+              className="text-accent-primary hover:text-pink-700 hover:underline font-medium"
             >
               Sign In
             </Link>

@@ -330,7 +330,7 @@ export default function InviteGuests() {
                 alt="OneKnot Logo" 
                 className="h-8 w-8 object-contain"
               />
-              <span className="text-2xl font-bold text-pink-600">OneKnot</span>
+              <span className="text-2xl font-bold text-accent-primary">OneKnot</span>
             </Link>
             <Link
               to={`/dashboard/${weddingId}`}
@@ -417,7 +417,7 @@ export default function InviteGuests() {
                     id="sendEmail"
                     checked={formData.sendEmail}
                     onChange={(e) => setFormData(prev => ({ ...prev, sendEmail: e.target.checked }))}
-                    className="w-4 h-4 text-pink-600 rounded"
+                    className="w-4 h-4 text-accent-primary rounded"
                   />
                   <label htmlFor="sendEmail" className="text-sm text-gray-700 flex items-center gap-1">
                     <Mail className="w-4 h-4" />
@@ -443,7 +443,7 @@ export default function InviteGuests() {
                     id="sendSMS"
                     checked={formData.sendSMS}
                     onChange={(e) => setFormData(prev => ({ ...prev, sendSMS: e.target.checked }))}
-                    className="w-4 h-4 text-pink-600 rounded"
+                    className="w-4 h-4 text-accent-primary rounded"
                   />
                   <label htmlFor="sendSMS" className="text-sm text-gray-700 flex items-center gap-1">
                     <MessageSquare className="w-4 h-4" />
@@ -553,7 +553,7 @@ export default function InviteGuests() {
                   className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-pink-600">
+                    <div className="w-10 h-10 rounded-full bg-surface-secondary flex items-center justify-center text-accent-primary">
                       <UserPlus className="w-5 h-5" />
                     </div>
                     <div>

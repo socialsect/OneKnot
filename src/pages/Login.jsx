@@ -161,10 +161,10 @@ export default function Login() {
   if (currentUser || authLoading || redirecting) {
     console.log('[Login] Rendering redirecting screen - currentUser:', currentUser ? currentUser.email : 'null', 'authLoading:', authLoading, 'redirecting:', redirecting)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="min-h-screen flex items-center justify-center bg-bg-primary">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#dd212b] border-t-transparent mx-auto"></div>
-          <p className="mt-6 text-[#dd212b] text-xl font-semibold">Redirecting...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-accent-primary border-t-transparent mx-auto"></div>
+          <p className="mt-6 text-accent-primary text-xl font-semibold">Redirecting...</p>
         </div>
       </div>
     )
@@ -173,7 +173,7 @@ export default function Login() {
   console.log('[Login] Rendering login form')
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-4">
+    <div className="min-h-screen bg-bg-primary flex items-center justify-center px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -186,18 +186,18 @@ export default function Login() {
               alt="OneKnot Logo" 
               className="h-12 w-12 object-contain"
             />
-            <span className="text-4xl font-bold text-[#dd212b]">OneKnot</span>
+            <span className="text-4xl font-bold text-accent-primary">OneKnot</span>
           </Link>
-          <h2 className="text-3xl font-bold mt-6 text-[#dd212b]">
+          <h2 className="text-3xl font-bold mt-6 text-text-primary">
             {isSignUp ? 'Create Your Account' : 'Welcome Back'}
           </h2>
-          <p className="text-[#dd212b]/70 mt-3 text-lg">
+          <p className="text-text-secondary mt-3 text-lg">
             {isSignUp ? 'Join OneKnot and start planning your perfect wedding' : 'Sign in to continue to your dashboard'}
           </p>
         </div>
 
         {error && (
-          <div className="bg-[#dd212b]/10 border-2 border-[#dd212b] text-[#dd212b] px-4 py-3 rounded-lg mb-6">
+          <div className="bg-alert/10 border border-alert text-alert px-4 py-3 rounded-lg mb-6">
             {error}
           </div>
         )}
@@ -205,7 +205,7 @@ export default function Login() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {isSignUp && (
             <div>
-              <label className="block text-base font-semibold text-[#dd212b] mb-3">
+              <label className="block text-base font-semibold text-text-primary mb-3">
                 Full Name
               </label>
               <input
@@ -221,7 +221,7 @@ export default function Login() {
           )}
           
           <div>
-            <label className="block text-base font-semibold text-[#dd212b] mb-3">
+            <label className="block text-base font-semibold text-text-primary mb-3">
               Email
             </label>
             <input
@@ -235,7 +235,7 @@ export default function Login() {
           </div>
 
           <div>
-            <label className="block text-base font-semibold text-[#dd212b] mb-3">
+            <label className="block text-base font-semibold text-text-primary mb-3">
               Password
             </label>
             <input
@@ -248,7 +248,7 @@ export default function Login() {
               minLength={6}
             />
             {isSignUp && (
-              <p className="text-sm text-[#dd212b]/60 mt-2">
+              <p className="text-sm text-text-secondary mt-2">
                 Must be at least 6 characters
               </p>
             )}
@@ -263,7 +263,7 @@ export default function Login() {
           </button>
         </form>
 
-        <p className="text-center mt-8 text-[#dd212b]/80 text-base">
+        <p className="text-center mt-8 text-text-secondary text-base">
           {isSignUp ? (
             <>
               Already have an account?{' '}
@@ -275,7 +275,7 @@ export default function Login() {
                 setPassword('')
                 setError('')
               }}
-                className="text-[#dd212b] font-semibold hover:underline"
+                className="text-accent-primary font-semibold hover:underline"
               >
                 Sign In
               </button>
@@ -291,7 +291,7 @@ export default function Login() {
                   setPassword('')
                   setError('')
                 }}
-                className="text-[#dd212b] font-semibold hover:underline"
+                className="text-accent-primary font-semibold hover:underline"
               >
                 Sign Up
               </button>
